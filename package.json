@@ -1,0 +1,35 @@
+{
+  "name": "scorpi",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Can Çevik <mazlumcancevik@gmail.com>",
+  "license": "MIT",
+  "keywords": [],
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:dev": "tsc --watch",
+    "lint": "eslint --ext .js,.ts .",
+    "lint:fix": "eslint --fix --ext .js,.ts .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.1",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canccevik/scorpi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/canccevik/scorpi/issues"
+  },
+  "homepage": "https://github.com/canccevik/scorpi#readme"
+}

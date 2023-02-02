@@ -2,10 +2,15 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
+    "paths": {
+      "@interfaces/*": ["interfaces/*"],
+      "@adapters/*": ["adapters/*"]
+    },
     "target": "ES5",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
+    "baseUrl": "./src",
     "rootDir": "./",
     "outDir": "./dist",
     "moduleResolution": "Node",

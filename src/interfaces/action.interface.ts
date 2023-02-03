@@ -1,4 +1,4 @@
-import { HttpMethod } from '@enums/index'
+import { HttpMethod } from '../enums'
 
 export interface Action {
   name: string | RegExp

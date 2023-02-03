@@ -2,19 +2,11 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
-    "paths": {
-      "@interfaces/*": ["interfaces/*"],
-      "@adapters/*": ["adapters/*"],
-      "@metadata/*": ["metadata/*"],
-      "@storages/*": ["storages/*"],
-      "@decorators/*": ["decorators/*"],
-      "@enums/*": ["enums/*"]
-    },
     "target": "ES5",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "rootDir": "./",
     "outDir": "./dist",
     "moduleResolution": "Node",

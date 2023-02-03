@@ -35,5 +35,8 @@
   "bugs": {
     "url": "https://github.com/canccevik/scorpi/issues"
   },
-  "homepage": "https://github.com/canccevik/scorpi#readme"
+  "homepage": "https://github.com/canccevik/scorpi#readme",
+  "dependencies": {
+    "magnodi": "^1.1.2"
+  }
 }

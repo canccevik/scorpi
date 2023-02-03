@@ -1,5 +1,5 @@
-import { Type } from '@interfaces/index'
-import { ActionMetadata, ControllerMetadata } from '@metadata/index'
+import { Type } from '../interfaces'
+import { ActionMetadata, ControllerMetadata } from '../metadata'
 
 class TypeMetadataStorageHost {
   private controllers = new Array<ControllerMetadata>()
@@ -15,6 +15,12 @@ class TypeMetadataStorageHost {
 
   public addActionMetadata(metadata: ActionMetadata): void {
     this.actions.unshift(metadata)
+  }
+
+  public getActionsMetadataByPredicate(
+    belongsToClass: (item: ActionMetadata) => boolean
+  ): ActionMetadata[] | undefined {
+    return this.actions.filter(belongsToClass)
   }
 }
 

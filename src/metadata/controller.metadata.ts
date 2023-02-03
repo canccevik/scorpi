@@ -1,4 +1,4 @@
-import { ControllerOptions } from '@interfaces/index'
+import { ControllerOptions } from '../interfaces'
 
 export interface ControllerMetadata {
   target: object

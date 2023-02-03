@@ -1,6 +1,6 @@
-import { HttpMethod } from '@enums/index'
-import { Action } from '@interfaces/index'
-import { TypeMetadataStorage } from '@storages/index'
+import { Action } from '../../interfaces'
+import { HttpMethod } from '../../enums'
+import { TypeMetadataStorage } from '../../storages'
 
 const defaultName = '/'
 

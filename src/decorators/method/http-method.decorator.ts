@@ -9,12 +9,12 @@ function createHttpMethodDecorator(
   name: string | RegExp = defaultName
 ): MethodDecorator {
   return (target: object, propertyKey: string | symbol): void => {
-    const method = target[propertyKey as keyof typeof target]
+    const targetMethod = target[propertyKey as keyof typeof target]
     const action: Action = { method, name }
 
     TypeMetadataStorage.addActionMetadata({
-      target,
-      method,
+      target: target.constructor,
+      method: targetMethod,
       action
     })
   }

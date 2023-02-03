@@ -5,7 +5,8 @@
     "paths": {
       "@interfaces/*": ["interfaces/*"],
       "@adapters/*": ["adapters/*"],
-      "@metadata/*": ["metadata/*"]
+      "@metadata/*": ["metadata/*"],
+      "@storages/*": ["storages/*"]
     },
     "target": "ES5",
     "experimentalDecorators": true,

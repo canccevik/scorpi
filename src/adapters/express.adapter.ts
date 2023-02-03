@@ -1,13 +1,17 @@
 import e, { Router } from 'express'
 import { Container } from 'magnodi'
 
-import { Type } from '../interfaces'
+import { AdapterOptions, Type } from '../interfaces'
 import { HttpAdapter } from './http.adapter'
 import { TypeMetadataStorage } from '../storages'
 
 export class ExpressAdapter extends HttpAdapter<e.Application> {
   private express!: typeof e
   private Router!: Type<Router>
+
+  constructor(private readonly options: AdapterOptions) {
+    super(options)
+  }
 
   public async initialize(): Promise<this> {
     await this.loadAdapter()
@@ -37,7 +41,8 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
       const controllerInstance = Container.resolve(controller)
       const router = this.createRouterAndRegisterActions(controller, controllerInstance)
 
-      this.app.use(controllerMetadata.options.name, router)
+      const controllerPath = this.globalPrefix + controllerMetadata.options.name
+      this.app.use(controllerPath, router)
     })
   }
 

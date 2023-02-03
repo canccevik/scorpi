@@ -1,4 +1,4 @@
-import { ScorpiOptions, Type } from './interfaces'
+import { AdapterOptions, ScorpiOptions, Type } from './interfaces'
 import { HttpAdapter } from './adapters'
 import { ScorpiApplication } from './scorpi-application'
 
@@ -7,7 +7,11 @@ export class ScorpiFactory {
     adapter: Type<HttpAdapter>,
     options: ScorpiOptions
   ): Promise<ScorpiApplication> {
-    const adapterInstance = new adapter()
+    const adapterOptions: AdapterOptions = {
+      globalPrefix: options.globalPrefix
+    }
+
+    const adapterInstance = new adapter(adapterOptions)
     const initializedAdapter = await adapterInstance.initialize()
 
     return new ScorpiApplication(initializedAdapter, options)

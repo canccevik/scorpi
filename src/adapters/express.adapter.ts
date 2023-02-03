@@ -21,4 +21,8 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
       throw new Error('Express package not found. Try to install it: npm install express')
     }
   }
+
+  public async listen(port: number): Promise<void> {
+    await this.app.listen(port)
+  }
 }

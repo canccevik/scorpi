@@ -2,6 +2,6 @@ import { Action } from '../interfaces'
 
 export interface ActionMetadata {
   target: object
-  method: Function
+  value: Function
   action: Action
 }

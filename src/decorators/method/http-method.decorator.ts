@@ -14,7 +14,7 @@ function createHttpMethodDecorator(
 
     TypeMetadataStorage.addActionMetadata({
       target: target.constructor,
-      method: targetMethod,
+      value: targetMethod,
       action
     })
   }

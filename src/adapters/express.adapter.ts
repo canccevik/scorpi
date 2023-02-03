@@ -47,8 +47,8 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
     )
     const router = new this.Router()
 
-    actionsMetadata?.forEach(({ method, action }) => {
-      router[action.method](action.name, method.bind(controllerInstance))
+    actionsMetadata?.forEach(({ value, action }) => {
+      router[action.method](action.name, value.bind(controllerInstance))
     })
     return router
   }

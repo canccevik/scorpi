@@ -4,7 +4,8 @@
   "compilerOptions": {
     "paths": {
       "@interfaces/*": ["interfaces/*"],
-      "@adapters/*": ["adapters/*"]
+      "@adapters/*": ["adapters/*"],
+      "@metadata/*": ["metadata/*"]
     },
     "target": "ES5",
     "experimentalDecorators": true,

@@ -4,7 +4,7 @@ import { ControllerMetadata } from '@metadata/index'
 class TypeMetadataStorageHost {
   private controllers = new Array<ControllerMetadata>()
 
-  public addController(metadata: ControllerMetadata): void {
+  public addControllerMetadata(metadata: ControllerMetadata): void {
     this.controllers.unshift(metadata)
   }
 

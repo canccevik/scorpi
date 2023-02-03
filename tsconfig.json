@@ -6,7 +6,8 @@
       "@interfaces/*": ["interfaces/*"],
       "@adapters/*": ["adapters/*"],
       "@metadata/*": ["metadata/*"],
-      "@storages/*": ["storages/*"]
+      "@storages/*": ["storages/*"],
+      "@decorators/*": ["decorators/*"]
     },
     "target": "ES5",
     "experimentalDecorators": true,

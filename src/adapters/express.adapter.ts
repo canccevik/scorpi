@@ -1,7 +1,7 @@
-import e, { Router } from 'express'
+import e, { RequestHandler, Router } from 'express'
 import { Container } from 'magnodi'
 
-import { AdapterOptions, Type } from '../interfaces'
+import { AdapterOptions, Middleware, Type } from '../interfaces'
 import { HttpAdapter } from './http.adapter'
 import { TypeMetadataStorage } from '../storages'
 
@@ -56,5 +56,9 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
       router[action.method](action.name, value.bind(controllerInstance))
     })
     return router
+  }
+
+  public registerGlobalMiddlewares(middlewares: Middleware[]): void {
+    middlewares.forEach((middleware) => this.app.use(<RequestHandler>middleware))
   }
 }

@@ -1,4 +1,4 @@
-import { AdapterOptions, Type } from '../interfaces'
+import { AdapterOptions, Middleware, Type } from '../interfaces'
 
 export abstract class HttpAdapter<App = unknown> {
   protected app!: App
@@ -13,4 +13,5 @@ export abstract class HttpAdapter<App = unknown> {
 
   public abstract listen(port: number): Promise<void>
   public abstract registerControllers(controllers: Type[]): void
+  public abstract registerGlobalMiddlewares(middlewares: Middleware[]): void
 }

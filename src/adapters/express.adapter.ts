@@ -41,8 +41,13 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
       const controllerInstance = Container.resolve(controller)
       const router = this.createRouterAndRegisterActions(controller, controllerInstance)
 
+      const controllerMiddlewares =
+        (TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
+          (metadata) => metadata.target === controller
+        )?.map((metadata) => metadata.value) as RequestHandler[]) || []
+
       const controllerPath = this.globalPrefix + controllerMetadata.options.name
-      this.app.use(controllerPath, router)
+      this.app.use(controllerPath, ...controllerMiddlewares, router)
     })
   }
 
@@ -53,7 +58,12 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
     const router = new this.Router()
 
     actionsMetadata?.forEach(({ value, action }) => {
-      router[action.method](action.name, value.bind(controllerInstance))
+      const actionMiddlewares =
+        (TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
+          (metadata) => metadata.target === value
+        )?.map((metadata) => metadata.value) as RequestHandler[]) || []
+
+      router[action.method](action.name, ...actionMiddlewares, value.bind(controllerInstance))
     })
     return router
   }

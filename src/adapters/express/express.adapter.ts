@@ -65,9 +65,9 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
           (metadata) => metadata.target === value
         )?.map((metadata) => metadata.value) as RequestHandler[]) || []
 
-      const actionWrapper = (req: Request, res: Response): void => {
+      const actionWrapper = async (req: Request, res: Response): Promise<void> => {
         try {
-          const response = value.bind(controllerInstance)(req, res)
+          const response = await value.bind(controllerInstance)(req, res)
           response && res.send(response)
         } catch (error) {
           this.handleError(error, req, res)
@@ -91,7 +91,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     })
   }
 
-  protected handleError(err: any, req: Request, res: Response): void {
+  protected async handleError(err: any, req: Request, res: Response): Promise<void> {
     const error = err.payload ? (err as HttpException) : new InternalServerErrorException()
 
     const exceptionHandler = this.options.exceptionHandler

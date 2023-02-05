@@ -14,6 +14,6 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
   public abstract listen(port: number): Promise<void>
   public abstract registerControllers(controllers: Type[]): void
   public abstract registerGlobalMiddlewares(middlewares: Middleware[]): void
-  protected abstract handleError(err: any, req: Request, res: Response): void
+  protected abstract handleError(err: any, req: Request, res: Response): Promise<void>
   public abstract registerErrorHandler(): void
 }

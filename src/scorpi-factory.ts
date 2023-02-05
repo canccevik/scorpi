@@ -8,7 +8,8 @@ export class ScorpiFactory {
     options: ScorpiOptions
   ): Promise<ScorpiApplication> {
     const adapterOptions: AdapterOptions = {
-      globalPrefix: options.globalPrefix
+      globalPrefix: options.globalPrefix,
+      exceptionHandler: options.exceptionHandler
     }
 
     const adapterInstance = new adapter(adapterOptions)

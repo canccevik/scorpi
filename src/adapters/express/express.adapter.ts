@@ -1,13 +1,13 @@
-import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 import { Container } from 'magnodi'
+import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
-import { AdapterOptions, Middleware, Type } from '../../interfaces'
+import { AdapterOptions, Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
 import { HttpAdapter } from '../http.adapter'
 import { TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
 
-export class ExpressAdapter extends HttpAdapter<e.Application> {
+export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
   private express!: typeof e
   private Router!: Type<Router>
 
@@ -70,7 +70,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
           const response = value.bind(controllerInstance)(req, res)
           response && res.send(response)
         } catch (error) {
-          this.handleError(error, res)
+          this.handleError(error, req, res)
         }
       }
 
@@ -91,15 +91,22 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
     })
   }
 
-  protected handleError(err: any, res: any): void {
+  protected handleError(err: any, req: Request, res: Response): void {
     const error = err.payload ? (err as HttpException) : new InternalServerErrorException()
+
+    const exceptionHandler = this.options.exceptionHandler
+
+    if (exceptionHandler) {
+      const exceptionHandlerInstance = Container.resolve<ScorpiExceptionHandler>(exceptionHandler)
+      return exceptionHandlerInstance.catch(error, req, res)
+    }
     res.status(error.statusCode).json(error.payload)
   }
 
   public registerErrorHandler(): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-      this.handleError(err, res)
+      this.handleError(err, req, res)
     })
   }
 }

@@ -7,6 +7,7 @@ export class ScorpiApplication {
       this.adapter.registerGlobalMiddlewares(this.options.middlewares)
     }
     this.adapter.registerControllers(this.options.controllers)
+    this.adapter.registerErrorHandler()
   }
 
   public async listen(port: number): Promise<void> {

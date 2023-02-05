@@ -1,10 +1,11 @@
-import e, { RequestHandler, Router } from 'express'
+import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 import { Container } from 'magnodi'
 
 import { AdapterOptions, Middleware, Type } from '../../interfaces'
 import { HttpAdapter } from '../http.adapter'
 import { TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
+import { HttpException, InternalServerErrorException } from '../../exceptions'
 
 export class ExpressAdapter extends HttpAdapter<e.Application> {
   private express!: typeof e
@@ -64,7 +65,16 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
           (metadata) => metadata.target === value
         )?.map((metadata) => metadata.value) as RequestHandler[]) || []
 
-      router[action.method](action.name, ...actionMiddlewares, value.bind(controllerInstance))
+      const actionWrapper = (req: Request, res: Response): void => {
+        try {
+          const response = value.bind(controllerInstance)(req, res)
+          response && res.send(response)
+        } catch (error) {
+          this.handleError(error, res)
+        }
+      }
+
+      router[action.method](action.name, ...actionMiddlewares, actionWrapper)
     })
     return router
   }
@@ -78,6 +88,18 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
         return this.app.use(middlewareInstance.use.bind(middlewareInstance))
       }
       this.app.use(middleware as RequestHandler)
+    })
+  }
+
+  protected handleError(err: any, res: any): void {
+    const error = err.payload ? (err as HttpException) : new InternalServerErrorException()
+    res.status(error.statusCode).json(error.payload)
+  }
+
+  public registerErrorHandler(): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+      this.handleError(err, res)
     })
   }
 }

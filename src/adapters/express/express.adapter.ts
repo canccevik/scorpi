@@ -1,9 +1,10 @@
 import e, { RequestHandler, Router } from 'express'
 import { Container } from 'magnodi'
 
-import { AdapterOptions, Middleware, ScorpiMiddleware, Type } from '../interfaces'
-import { HttpAdapter } from './http.adapter'
-import { TypeMetadataStorage } from '../storages'
+import { AdapterOptions, Middleware, Type } from '../../interfaces'
+import { HttpAdapter } from '../http.adapter'
+import { TypeMetadataStorage } from '../../storages'
+import { ExpressMiddleware } from './express-middleware.interface'
 
 export class ExpressAdapter extends HttpAdapter<e.Application> {
   private express!: typeof e
@@ -71,12 +72,12 @@ export class ExpressAdapter extends HttpAdapter<e.Application> {
   public registerGlobalMiddlewares(middlewares: Middleware[]): void {
     middlewares.forEach((middleware) => {
       if (typeof middleware.prototype.use === 'function') {
-        const middlewareInstance = Container.resolve<ScorpiMiddleware>(
-          middleware as Type<ScorpiMiddleware>
+        const middlewareInstance = Container.resolve<ExpressMiddleware>(
+          middleware as Type<ExpressMiddleware>
         )
-        return this.app.use(<RequestHandler>middlewareInstance.use.bind(middlewareInstance))
+        return this.app.use(middlewareInstance.use.bind(middlewareInstance))
       }
-      this.app.use(<RequestHandler>middleware)
+      this.app.use(middleware as RequestHandler)
     })
   }
 }

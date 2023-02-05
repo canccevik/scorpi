@@ -1,6 +1,5 @@
 export * from './scorpi-factory'
 export * from './decorators'
 export * from './exceptions'
-export { ExpressAdapter } from './adapters'
-export { ScorpiMiddleware } from './interfaces'
+export { ExpressAdapter, ExpressMiddleware } from './adapters'
 export { HttpStatus } from './enums'

@@ -1,5 +1,6 @@
 export * from './scorpi-factory'
 export * from './decorators'
 export * from './exceptions'
-export { ExpressAdapter, ExpressMiddleware } from './adapters'
+export * from './adapters'
 export { HttpStatus } from './enums'
+export { Injectable } from 'magnodi'

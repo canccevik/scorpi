@@ -35,7 +35,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     await this.app.listen(port)
   }
 
-  public registerControllers(controllers: Type[]): void {
+  public registerControllers(controllers: Type[]): this {
     controllers.forEach((controller) => {
       const controllerMetadata = TypeMetadataStorage.getControllerMetadataByTarget(controller)!
       Container.provide(controller, controller)
@@ -51,6 +51,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const controllerPath = this.globalPrefix + controllerMetadata.options.name
       this.app.use(controllerPath, ...controllerMiddlewares, router)
     })
+    return this
   }
 
   private createRouterAndRegisterActions(controller: Type, controllerInstance: unknown): e.Router {
@@ -79,7 +80,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     return router
   }
 
-  public registerGlobalMiddlewares(middlewares: Middleware[]): void {
+  public registerGlobalMiddlewares(middlewares: Middleware[]): this {
     middlewares.forEach((middleware) => {
       if (typeof middleware.prototype.use === 'function') {
         const middlewareInstance = Container.resolve<ExpressMiddleware>(
@@ -89,6 +90,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       }
       this.app.use(middleware as RequestHandler)
     })
+    return this
   }
 
   protected async handleError(err: any, req: Request, res: Response): Promise<void> {
@@ -103,10 +105,11 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     res.status(error.statusCode).json(error.payload)
   }
 
-  public registerErrorHandler(): void {
+  public registerErrorHandler(): this {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       this.handleError(err, req, res)
     })
+    return this
   }
 }

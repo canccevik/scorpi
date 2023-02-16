@@ -4,7 +4,7 @@ import { ActionMetadata, ControllerMetadata, MiddlewareMetadata } from '../metad
 class TypeMetadataStorageHost {
   private controllers = new Array<ControllerMetadata>()
   private actions = new Array<ActionMetadata>()
-  public middlewares = new Array<MiddlewareMetadata>()
+  private middlewares = new Array<MiddlewareMetadata>()
 
   public addControllerMetadata(metadata: ControllerMetadata): void {
     this.controllers.unshift(metadata)

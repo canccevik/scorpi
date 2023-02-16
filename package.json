@@ -25,6 +25,9 @@
     "prettier": "^2.7.1",
     "typescript": "^4.7.4"
   },
+  "dependencies": {
+    "magnodi": "^1.1.2"
+  },
   "optionalDependencies": {
     "express": "^4.18.2"
   },
@@ -35,8 +38,5 @@
   "bugs": {
     "url": "https://github.com/canccevik/scorpi/issues"
   },
-  "homepage": "https://github.com/canccevik/scorpi#readme",
-  "dependencies": {
-    "magnodi": "^1.1.2"
-  }
+  "homepage": "https://github.com/canccevik/scorpi#readme"
 }

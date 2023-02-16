@@ -3,11 +3,10 @@ import { ScorpiOptions } from './interfaces'
 
 export class ScorpiApplication {
   constructor(private readonly adapter: HttpAdapter, private readonly options: ScorpiOptions) {
-    if (this.options.middlewares) {
-      this.adapter.registerGlobalMiddlewares(this.options.middlewares)
-    }
-    this.adapter.registerControllers(this.options.controllers)
-    this.adapter.registerErrorHandler()
+    this.adapter
+      .registerGlobalMiddlewares(this.options.middlewares || [])
+      .registerControllers(this.options.controllers)
+      .registerErrorHandler()
   }
 
   public async listen(port: number): Promise<void> {

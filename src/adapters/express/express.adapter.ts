@@ -43,13 +43,13 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const controllerInstance = Container.resolve(controller)
       const router = this.createRouterAndRegisterActions(controller, controllerInstance)
 
-      const controllerMiddlewares =
-        (TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
-          (metadata) => metadata.target === controller
-        )?.map((metadata) => metadata.value) as RequestHandler[]) || []
+      const controllerMiddlewaresMetadata = TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
+        (metadata) => metadata.target === controller
+      )
+      const controllerMiddlewares = controllerMiddlewaresMetadata?.map((metadata) => metadata.value)
 
       const controllerPath = this.globalPrefix + controllerMetadata.options.name
-      this.app.use(controllerPath, ...controllerMiddlewares, router)
+      this.app.use(controllerPath, ...[controllerMiddlewares as RequestHandler[]], router)
     })
     return this
   }
@@ -61,10 +61,10 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     const router = new this.Router()
 
     actionsMetadata?.forEach(({ value, action }) => {
-      const actionMiddlewares =
-        (TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
-          (metadata) => metadata.target === value
-        )?.map((metadata) => metadata.value) as RequestHandler[]) || []
+      const actionMiddlewaresMetadata = TypeMetadataStorage.getMiddlewaresMetadataByPredicate(
+        (metadata) => metadata.target === value
+      )
+      const actionMiddlewares = actionMiddlewaresMetadata?.map((metadata) => metadata.value) || []
 
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -74,15 +74,14 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
           this.handleError(error, req, res)
         }
       }
-
-      router[action.method](action.name, ...actionMiddlewares, actionWrapper)
+      router[action.method](action.name, ...[actionMiddlewares as RequestHandler[]], actionWrapper)
     })
     return router
   }
 
   public registerGlobalMiddlewares(middlewares: Middleware[]): this {
     middlewares.forEach((middleware) => {
-      if (typeof middleware.prototype.use === 'function') {
+      if (typeof middleware.prototype.use !== 'function') {
         const middlewareInstance = Container.resolve<ExpressMiddleware>(
           middleware as Type<ExpressMiddleware>
         )
@@ -95,6 +94,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
 
   protected async handleError(err: any, req: Request, res: Response): Promise<void> {
     const error = err.payload ? (err as HttpException) : new InternalServerErrorException()
+    err.payload && console.error(err)
 
     const exceptionHandler = this.options.exceptionHandler
 

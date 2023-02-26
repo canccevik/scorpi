@@ -1,9 +1,8 @@
 import { Type } from '../interfaces'
-import { ActionMetadata, ControllerMetadata, MiddlewareMetadata } from '../metadata'
+import { ControllerMetadata, MiddlewareMetadata } from '../metadata'
 
 class TypeMetadataStorageHost {
   private controllers = new Array<ControllerMetadata>()
-  private actions = new Array<ActionMetadata>()
   private middlewares = new Array<MiddlewareMetadata>()
 
   public addControllerMetadata(metadata: ControllerMetadata): void {
@@ -12,16 +11,6 @@ class TypeMetadataStorageHost {
 
   public getControllerMetadataByTarget(target: Type): ControllerMetadata | undefined {
     return this.controllers.find((metadata) => metadata.target === target)
-  }
-
-  public addActionMetadata(metadata: ActionMetadata): void {
-    this.actions.unshift(metadata)
-  }
-
-  public getActionsMetadataByPredicate(
-    belongsToTarget: (item: ActionMetadata) => boolean
-  ): ActionMetadata[] | undefined {
-    return this.actions.filter(belongsToTarget)
   }
 
   public addMiddlewareMetadata(metadata: MiddlewareMetadata): void {

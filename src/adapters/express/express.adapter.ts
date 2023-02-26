@@ -3,7 +3,7 @@ import e, { RequestHandler, Router, Request, Response, NextFunction } from 'expr
 
 import { Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
 import { AdapterOptions, HttpAdapter } from '../http.adapter'
-import { TypeMetadataStorage } from '../../storages'
+import { ActionStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
 
@@ -55,7 +55,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
   }
 
   private createRouterAndRegisterActions(controller: Type, controllerInstance: unknown): e.Router {
-    const actionsMetadata = TypeMetadataStorage.getActionsMetadataByPredicate(
+    const actionsMetadata = ActionStorage.getActionsMetadataByPredicate(
       (metadata) => metadata.target === controller
     )
     const router = new this.Router()

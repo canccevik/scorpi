@@ -1,10 +1,6 @@
+import { Action } from '../../metadata'
 import { HttpMethod } from '../../enums'
-import { TypeMetadataStorage } from '../../storages'
-
-export interface Action {
-  name: string | RegExp
-  method: HttpMethod
-}
+import { ActionStorage } from '../../storages'
 
 const defaultName = '/'
 
@@ -16,7 +12,7 @@ function createHttpMethodDecorator(
     const targetMethod = target[propertyKey as keyof typeof target]
     const action: Action = { method, name }
 
-    TypeMetadataStorage.addActionMetadata({
+    ActionStorage.addActionMetadata({
       target: target.constructor,
       value: targetMethod,
       action

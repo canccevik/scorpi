@@ -1,6 +1,10 @@
-import { Action } from '../../interfaces'
 import { HttpMethod } from '../../enums'
 import { TypeMetadataStorage } from '../../storages'
+
+export interface Action {
+  name: string | RegExp
+  method: HttpMethod
+}
 
 const defaultName = '/'
 

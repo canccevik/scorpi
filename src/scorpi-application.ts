@@ -1,5 +1,5 @@
 import { HttpAdapter } from './adapters'
-import { ScorpiOptions } from './interfaces'
+import { ScorpiOptions } from './scorpi-factory'
 
 export class ScorpiApplication {
   constructor(private readonly adapter: HttpAdapter, private readonly options: ScorpiOptions) {

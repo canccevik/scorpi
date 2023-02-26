@@ -1,8 +1,8 @@
 import { Container } from 'magnodi'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
-import { AdapterOptions, Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
-import { HttpAdapter } from '../http.adapter'
+import { Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
+import { AdapterOptions, HttpAdapter } from '../http.adapter'
 import { TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'

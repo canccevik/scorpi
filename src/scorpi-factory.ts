@@ -1,6 +1,11 @@
-import { AdapterOptions, ScorpiOptions, Type } from './interfaces'
-import { HttpAdapter } from './adapters'
+import { Middleware, Type } from './interfaces'
+import { AdapterOptions, HttpAdapter } from './adapters'
 import { ScorpiApplication } from './scorpi-application'
+
+export interface ScorpiOptions extends AdapterOptions {
+  controllers: Type[]
+  middlewares?: Middleware[]
+}
 
 export class ScorpiFactory {
   public static async create(

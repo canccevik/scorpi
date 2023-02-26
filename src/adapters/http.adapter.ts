@@ -1,4 +1,9 @@
-import { AdapterOptions, Middleware, Type } from '../interfaces'
+import { Middleware, ScorpiExceptionHandler, Type } from '../interfaces'
+
+export interface AdapterOptions {
+  globalPrefix?: string
+  exceptionHandler?: Type<ScorpiExceptionHandler>
+}
 
 export abstract class HttpAdapter<App = unknown, Request = unknown, Response = unknown> {
   protected app!: App

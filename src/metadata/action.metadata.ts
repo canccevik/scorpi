@@ -1,4 +1,4 @@
-import { Action } from '../interfaces'
+import { Action } from '../decorators'
 
 export interface ActionMetadata {
   target: object

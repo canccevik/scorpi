@@ -81,7 +81,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
 
   public registerGlobalMiddlewares(middlewares: Middleware[]): this {
     middlewares.forEach((middleware) => {
-      if (typeof middleware.prototype.use !== 'function') {
+      if (typeof middleware.prototype.use === 'function') {
         const middlewareInstance = Container.resolve<ExpressMiddleware>(
           middleware as Type<ExpressMiddleware>
         )

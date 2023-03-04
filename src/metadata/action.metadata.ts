@@ -4,6 +4,7 @@ export interface Action {
   name?: string | RegExp
   method?: HttpMethod
   statusCode?: number
+  redirectUrl?: string
 }
 
 export interface ActionMetadata {

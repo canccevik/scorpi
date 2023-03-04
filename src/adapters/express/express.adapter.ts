@@ -120,8 +120,15 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
 
   protected handleSuccess(req: Request, res: Response, action: Action): void {
     action.statusCode && res.status(action.statusCode)
+
+    if (action.headers) {
+      action.headers.forEach(({ key, value }) => res.header(key, value))
+    }
+
     action.redirectUrl && res.redirect(action.redirectUrl)
+
     action.contentType && res.contentType(action.contentType)
+
     action.locationUrl && res.location(action.locationUrl)
   }
 }

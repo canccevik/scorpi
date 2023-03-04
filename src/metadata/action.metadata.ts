@@ -1,5 +1,10 @@
 import { HttpMethod } from '../enums'
 
+export interface Header {
+  key: string
+  value: string
+}
+
 export interface Action {
   name?: string | RegExp
   method?: HttpMethod
@@ -7,6 +12,7 @@ export interface Action {
   redirectUrl?: string
   contentType?: string
   locationUrl?: string
+  headers?: Header[]
 }
 
 export interface ActionMetadata {

@@ -6,7 +6,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
-    "baseUrl": ".",
     "rootDir": "./",
     "outDir": "./dist",
     "moduleResolution": "Node",

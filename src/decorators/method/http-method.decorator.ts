@@ -1,16 +1,17 @@
 import { Action } from '../../metadata'
-import { HttpMethod } from '../../enums'
+import { HttpMethod, HttpStatus } from '../../enums'
 import { ActionStorage } from '../../storages'
 
 const defaultName = '/'
 
 function createHttpMethodDecorator(
   method: HttpMethod,
-  name: string | RegExp = defaultName
+  name: string | RegExp = defaultName,
+  statusCode = HttpStatus.OK
 ): MethodDecorator {
   return (target: object, propertyKey: string | symbol): void => {
     const targetMethod = target[propertyKey as keyof typeof target]
-    const action: Action = { method, name }
+    const action: Action = { method, name, statusCode }
 
     ActionStorage.addActionMetadata({
       target: target.constructor,
@@ -25,7 +26,7 @@ export function Get(name?: string | RegExp): MethodDecorator {
 }
 
 export function Post(name?: string | RegExp): MethodDecorator {
-  return createHttpMethodDecorator(HttpMethod.POST, name)
+  return createHttpMethodDecorator(HttpMethod.POST, name, HttpStatus.CREATED)
 }
 
 export function Put(name?: string | RegExp): MethodDecorator {

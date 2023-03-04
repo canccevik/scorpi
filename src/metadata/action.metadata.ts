@@ -5,6 +5,7 @@ export interface Action {
   method?: HttpMethod
   statusCode?: number
   redirectUrl?: string
+  contentType?: string
 }
 
 export interface ActionMetadata {

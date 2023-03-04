@@ -121,5 +121,6 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
   protected handleSuccess(req: Request, res: Response, action: Action): void {
     action.statusCode && res.status(action.statusCode)
     action.redirectUrl && res.redirect(action.redirectUrl)
+    action.contentType && res.contentType(action.contentType)
   }
 }

@@ -7,6 +7,7 @@ import { ActionStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
 import { Action } from '../../metadata'
+import { getClassesBySuffix } from '../../utils'
 
 export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
   private express!: typeof e
@@ -36,7 +37,11 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     await this.app.listen(port)
   }
 
-  public registerControllers(controllers: Type[]): this {
+  public async registerControllers(controllers: Type[] | string): Promise<void> {
+    if (typeof controllers === 'string') {
+      controllers = await getClassesBySuffix(controllers)
+    }
+
     controllers.forEach((controller) => {
       const controllerMetadata = TypeMetadataStorage.getControllerMetadataByTarget(controller)!
       Container.provide(controller, controller)
@@ -52,7 +57,6 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const controllerPath = this.globalPrefix + controllerMetadata.options.name
       this.app.use(controllerPath, ...[controllerMiddlewares as RequestHandler[]], router)
     })
-    return this
   }
 
   private createRouterAndRegisterActions(controller: Type, controllerInstance: unknown): e.Router {
@@ -84,7 +88,11 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     return router
   }
 
-  public registerGlobalMiddlewares(middlewares: Middleware[]): this {
+  public async registerGlobalMiddlewares(middlewares: Middleware[]): Promise<void> {
+    if (typeof middlewares === 'string') {
+      middlewares = await getClassesBySuffix(middlewares)
+    }
+
     middlewares.forEach((middleware) => {
       if (typeof middleware.prototype.use === 'function') {
         const middlewareInstance = Container.resolve<ExpressMiddleware>(
@@ -94,7 +102,6 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       }
       this.app.use(middleware as RequestHandler)
     })
-    return this
   }
 
   protected async handleError(err: any, req: Request, res: Response): Promise<void> {
@@ -110,12 +117,11 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     res.status(error.statusCode).json(error.payload)
   }
 
-  public registerErrorHandler(): this {
+  public registerErrorHandler(): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       this.handleError(err, req, res)
     })
-    return this
   }
 
   protected handleSuccess(req: Request, res: Response, action: Action): void {

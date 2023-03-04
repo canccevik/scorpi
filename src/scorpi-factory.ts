@@ -3,8 +3,8 @@ import { AdapterOptions, HttpAdapter } from './adapters'
 import { ScorpiApplication } from './scorpi-application'
 
 export interface ScorpiOptions extends AdapterOptions {
-  controllers: Type[]
-  middlewares?: Middleware[]
+  controllers: Type[] | string
+  middlewares?: Middleware[] | string
 }
 
 export class ScorpiFactory {

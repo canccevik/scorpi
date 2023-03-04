@@ -6,6 +6,7 @@ import { AdapterOptions, HttpAdapter } from '../http.adapter'
 import { ActionStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
+import { Action } from '../../metadata'
 
 export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
   private express!: typeof e
@@ -68,12 +69,16 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
 
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
         try {
+          this.handleSuccess(req, res, action)
           const response = await value.bind(controllerInstance)(req, res)
           response && res.send(response)
         } catch (error) {
           this.handleError(error, req, res)
         }
       }
+
+      if (!action.method || !action.name) return
+
       router[action.method](action.name, ...[actionMiddlewares as RequestHandler[]], actionWrapper)
     })
     return router
@@ -111,5 +116,9 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       this.handleError(err, req, res)
     })
     return this
+  }
+
+  protected handleSuccess(req: Request, res: Response, action: Action): void {
+    action.statusCode && res.status(action.statusCode)
   }
 }

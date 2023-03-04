@@ -6,6 +6,7 @@ export interface Action {
   statusCode?: number
   redirectUrl?: string
   contentType?: string
+  locationUrl?: string
 }
 
 export interface ActionMetadata {

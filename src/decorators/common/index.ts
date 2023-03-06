@@ -1,1 +1,1 @@
-export * from './use-middleware.decorator'
+export * from './use.decorator'

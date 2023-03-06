@@ -3,7 +3,7 @@ import { Container } from 'magnodi'
 import { Middleware, ScorpiMiddleware, Type } from '../../interfaces'
 import { TypeMetadataStorage } from '../../storages'
 
-export function UseMiddleware(middlewares: Middleware | Middleware[]): Function {
+export function Use(middlewares: Middleware | Middleware[]): Function {
   return (target: object, propertyKey?: string | symbol): void => {
     if (!Array.isArray(middlewares)) {
       middlewares = [middlewares]

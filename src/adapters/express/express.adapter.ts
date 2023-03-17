@@ -3,7 +3,7 @@ import e, { RequestHandler, Router, Request, Response, NextFunction } from 'expr
 
 import { Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
 import { AdapterOptions, HttpAdapter } from '../http.adapter'
-import { ActionStorage, TypeMetadataStorage } from '../../storages'
+import { ActionStorage, ParamStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
 import { Action } from '../../metadata'
@@ -72,9 +72,14 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const actionMiddlewares = actionMiddlewaresMetadata?.map((metadata) => metadata.value) || []
 
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
+        const actionParams =
+          ParamStorage.getParamsMetadataByPredicate(
+            (param) => param.target === controller && param.value === value
+          )?.map((param) => param.getValue(req, res)) || []
+
         try {
           this.handleSuccess(req, res, action)
-          const response = await value.bind(controllerInstance)(req, res)
+          const response = await value.bind(controllerInstance)(...actionParams)
           response && res.send(response)
         } catch (error) {
           this.handleError(error, req, res)

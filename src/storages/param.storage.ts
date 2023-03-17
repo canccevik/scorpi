@@ -10,7 +10,7 @@ class ParamStorageHost {
   public getParamsMetadataByPredicate(
     belongsToTarget: (item: ParamMetadata) => boolean
   ): ParamMetadata[] | undefined {
-    return this.params.filter(belongsToTarget).sort((a, b) => b.index - a.index)
+    return this.params.filter(belongsToTarget).sort((a, b) => a.index - b.index)
   }
 }
 

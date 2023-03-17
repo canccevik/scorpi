@@ -1,4 +1,4 @@
-export type ParamType = 'req'
+export type ParamType = 'req' | 'res'
 
 export interface ParamMetadata {
   target: object

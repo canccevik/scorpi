@@ -1,3 +1,4 @@
+import { Type } from '../interfaces'
 import { ActionMetadata } from '../metadata'
 
 class ActionStorageHost {
@@ -17,10 +18,8 @@ class ActionStorageHost {
     this.actions[metadataIndex].action = { ...action, ...metadata.action }
   }
 
-  public getActionsMetadataByPredicate(
-    belongsToTarget: (item: ActionMetadata) => boolean
-  ): ActionMetadata[] | undefined {
-    return this.actions.filter(belongsToTarget)
+  public getActionsMetadataByTarget(target: Type): ActionMetadata[] {
+    return this.actions.filter((metadata) => metadata.target === target)
   }
 }
 

@@ -1,4 +1,4 @@
-import { Type } from '../interfaces'
+import { Middleware, Type } from '../interfaces'
 import { ControllerMetadata, MiddlewareMetadata } from '../metadata'
 
 class TypeMetadataStorageHost {
@@ -17,10 +17,9 @@ class TypeMetadataStorageHost {
     this.middlewares.unshift(metadata)
   }
 
-  public getMiddlewaresMetadataByPredicate(
-    belongsToTarget: (item: MiddlewareMetadata) => boolean
-  ): MiddlewareMetadata[] | undefined {
-    return this.middlewares.filter(belongsToTarget)
+  public getMiddlewaresByTarget(target: Type | Function): Middleware[] {
+    const middlewaresMetadata = this.middlewares.filter((item) => item.target === target)
+    return middlewaresMetadata.map((metadata) => metadata.value) || []
   }
 }
 

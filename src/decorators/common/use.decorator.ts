@@ -14,7 +14,7 @@ export function Use(middlewares: Middleware | Middleware[]): Function {
     middlewares.forEach((middleware) => {
       let value = middleware
 
-      if (typeof middleware.prototype.use === 'function') {
+      if (middleware.prototype.use) {
         const middlewareInstance = Container.resolve<ScorpiMiddleware>(
           middleware as Type<ScorpiMiddleware>
         )

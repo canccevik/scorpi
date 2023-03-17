@@ -6,7 +6,7 @@ import { AdapterOptions, HttpAdapter } from '../http.adapter'
 import { ActionStorage, ParamStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
-import { Action } from '../../metadata'
+import { Action, ParamType } from '../../metadata'
 import { getClassesBySuffix } from '../../utils'
 
 export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
@@ -76,7 +76,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
         const actionParams =
           ParamStorage.getParamsMetadataByPredicate(
             (param) => param.target === controller && param.value === value
-          )?.map((param) => param.getValue(req, res)) || []
+          )?.map((param) => this.getParamFromRequest(req, res, param.type)) || []
 
         try {
           this.handleSuccess(req, res, action)
@@ -136,5 +136,30 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     action.redirectUrl && res.redirect(action.redirectUrl)
     action.contentType && res.contentType(action.contentType)
     action.locationUrl && res.location(action.locationUrl)
+  }
+
+  protected getParamFromRequest(req: Request, res: Response, paramType: ParamType): any {
+    switch (paramType) {
+      case 'req':
+        return req
+      case 'res':
+        return res
+      case 'body':
+        return req.body
+      case 'cookies':
+        return req.cookies
+      case 'headers':
+        return req.headers
+      case 'hosts':
+        return req.hostname
+      case 'ip':
+        return req.ip
+      case 'params':
+        return req.params
+      case 'query':
+        return req.query
+      case 'session':
+        return (req as any).session
+    }
   }
 }

@@ -1,6 +1,7 @@
+import { ParamType } from '../../metadata'
 import { ParamStorage } from '../../storages'
 
-export function createParamDecorator(valueHandler: (req: any, res: any) => any): Function {
+export function createParamDecorator(type: ParamType): Function {
   return (target: object, propertyKey: string | symbol, parameterIndex: number): void => {
     const targetMethod = target[propertyKey as keyof typeof target]
 
@@ -8,7 +9,7 @@ export function createParamDecorator(valueHandler: (req: any, res: any) => any):
       target: target.constructor,
       value: targetMethod,
       index: parameterIndex,
-      getValue: valueHandler
+      type
     })
   }
 }

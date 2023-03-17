@@ -1,4 +1,4 @@
-import { Action } from '../metadata'
+import { Action, ParamType } from '../metadata'
 import { Middleware, ScorpiExceptionHandler, Type } from '../interfaces'
 
 export interface AdapterOptions {
@@ -23,4 +23,5 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
   protected abstract handleError(err: any, req: Request, res: Response): Promise<void>
   protected abstract handleSuccess(req: Request, res: Response, action: Action): void
   public abstract registerErrorHandler(): void
+  protected abstract getParamFromRequest(req: Request, res: Response, paramType: ParamType): any
 }

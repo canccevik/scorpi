@@ -1,6 +1,18 @@
+export type ParamType =
+  | 'req'
+  | 'res'
+  | 'body'
+  | 'cookies'
+  | 'headers'
+  | 'hosts'
+  | 'ip'
+  | 'params'
+  | 'query'
+  | 'session'
+
 export interface ParamMetadata {
   target: object
   value: Function
   index: number
-  getValue: (req: any, res: any) => any
+  type: ParamType
 }

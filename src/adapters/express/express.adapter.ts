@@ -20,6 +20,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
   public async initialize(): Promise<this> {
     await this.loadAdapter()
     this.app = this.express()
+    this.app.use(this.express.json())
     return this
   }
 

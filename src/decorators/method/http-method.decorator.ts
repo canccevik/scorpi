@@ -1,5 +1,5 @@
 import { HttpMethod, HttpStatus } from '../../enums'
-import { createMethodDecorator } from '../../utils'
+import { createMethodDecorator } from './create-method-decorator'
 
 export function Get(name: string | RegExp = '/'): MethodDecorator {
   return createMethodDecorator({ method: HttpMethod.GET, name })

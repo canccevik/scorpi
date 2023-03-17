@@ -1,5 +1,5 @@
-import { Action } from '../metadata'
-import { ActionStorage } from '../storages'
+import { Action } from '../../metadata'
+import { ActionStorage } from '../../storages'
 
 export function createMethodDecorator(action: Action): MethodDecorator {
   return (target: object, propertyKey: string | symbol): void => {

@@ -12,11 +12,8 @@ export class ScorpiFactory {
     adapter: Type<HttpAdapter>,
     options: ScorpiOptions
   ): Promise<ScorpiApplication> {
-    const adapterOptions: AdapterOptions = {
-      globalPrefix: options.globalPrefix,
-      exceptionHandler: options.exceptionHandler,
-      useValidation: options.useValidation
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { controllers, middlewares, ...adapterOptions } = options
 
     const adapterInstance = new adapter(adapterOptions)
     const initializedAdapter = await adapterInstance.initialize()

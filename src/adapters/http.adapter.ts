@@ -9,6 +9,7 @@ export interface AdapterOptions {
   globalPrefix?: string
   exceptionHandler?: Type<ScorpiExceptionHandler>
   useValidation?: boolean
+  useClassTransformer?: boolean
 }
 
 export abstract class HttpAdapter<App = unknown, Request = unknown, Response = unknown> {
@@ -17,10 +18,8 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
 
   constructor(private adapterOptions: AdapterOptions) {
     this.globalPrefix = adapterOptions.globalPrefix || ''
-
-    if (this.adapterOptions.useValidation === undefined) {
-      this.adapterOptions.useValidation = true
-    }
+    this.adapterOptions.useValidation = this.adapterOptions.useValidation ?? true
+    this.adapterOptions.useClassTransformer = this.adapterOptions.useClassTransformer ?? true
   }
 
   public abstract initialize(): Promise<this>
@@ -47,6 +46,6 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
       const payload = this.adapterOptions.exceptionHandler ? errors : { errors }
       throw new BadRequestException(payload)
     }
-    return instance
+    return this.adapterOptions.useClassTransformer ? instance : value
   }
 }

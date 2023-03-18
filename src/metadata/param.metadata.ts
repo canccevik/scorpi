@@ -17,4 +17,5 @@ export interface ParamMetadata {
   paramType: ParamType
   useValidator: boolean
   type: any
+  propertyName?: string
 }

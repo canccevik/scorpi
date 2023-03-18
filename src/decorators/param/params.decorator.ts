@@ -1,5 +1,8 @@
 import { createParamDecorator } from './create-param-decorator'
 
-export function Params(): Function {
-  return createParamDecorator('params', true)
+export function Params(propertyName?: string): Function {
+  return createParamDecorator('params', {
+    useValidator: true,
+    propertyName
+  })
 }

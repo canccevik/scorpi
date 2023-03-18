@@ -2,11 +2,11 @@ import { Container } from 'magnodi'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
 import { Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
-import { AdapterOptions, HttpAdapter } from '../http.adapter'
+import { AdapterOptions, HttpAdapter, ParamFilter } from '../http.adapter'
 import { ActionStorage, ParamStorage, TypeMetadataStorage } from '../../storages'
 import { ExpressMiddleware } from './express-middleware.interface'
 import { HttpException, InternalServerErrorException } from '../../exceptions'
-import { Action, ParamType } from '../../metadata'
+import { Action } from '../../metadata'
 import { getClassesBySuffix } from '../../utils'
 
 export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
@@ -67,7 +67,10 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
         try {
           const actionParams = ParamStorage.getParamsMetadata(controller, value).map((param) => {
-            const paramValue = this.getParamFromRequest(req, res, param.paramType)
+            const paramValue = this.getParamFromRequest(req, res, {
+              paramType: param.paramType,
+              propertyName: param.propertyName
+            })
             return this.transformResult(param.type, paramValue, param.useValidator)
           })
 
@@ -127,28 +130,31 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     action.locationUrl && res.location(action.locationUrl)
   }
 
-  protected getParamFromRequest(req: Request, res: Response, paramType: ParamType): any {
-    switch (paramType) {
-      case 'req':
-        return req
-      case 'res':
-        return res
-      case 'body':
-        return req.body
-      case 'cookies':
-        return req.cookies
-      case 'headers':
-        return req.headers
-      case 'hosts':
-        return req.hostname
-      case 'ip':
-        return req.ip
-      case 'params':
-        return req.params
-      case 'query':
-        return req.query
-      case 'session':
-        return (req as any).session
-    }
+  protected getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any {
+    const param = ((): any => {
+      switch (filter.paramType) {
+        case 'req':
+          return req
+        case 'res':
+          return res
+        case 'body':
+          return req.body
+        case 'cookies':
+          return req.cookies
+        case 'headers':
+          return req.headers
+        case 'hosts':
+          return req.hostname
+        case 'ip':
+          return req.ip
+        case 'params':
+          return req.params
+        case 'query':
+          return req.query
+        case 'session':
+          return (req as any).session
+      }
+    })()
+    return filter.propertyName ? param[filter.propertyName] : param
   }
 }

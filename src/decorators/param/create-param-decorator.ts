@@ -1,7 +1,12 @@
 import { ParamType } from '../../metadata'
 import { ParamStorage } from '../../storages'
 
-export function createParamDecorator(paramType: ParamType, useValidator = false): Function {
+export interface ParamOptions {
+  useValidator?: boolean
+  propertyName?: string
+}
+
+export function createParamDecorator(paramType: ParamType, options?: ParamOptions): Function {
   return (target: object, propertyKey: string | symbol, parameterIndex: number): void => {
     const targetMethod = target[propertyKey as keyof typeof target]
 
@@ -11,7 +16,8 @@ export function createParamDecorator(paramType: ParamType, useValidator = false)
       target: target.constructor,
       value: targetMethod,
       index: parameterIndex,
-      useValidator,
+      useValidator: options?.useValidator ?? false,
+      propertyName: options?.propertyName,
       paramType,
       type
     })

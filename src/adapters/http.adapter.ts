@@ -12,6 +12,11 @@ export interface AdapterOptions {
   useClassTransformer?: boolean
 }
 
+export interface ParamFilter {
+  paramType: ParamType
+  propertyName?: string
+}
+
 export abstract class HttpAdapter<App = unknown, Request = unknown, Response = unknown> {
   protected app!: App
   protected globalPrefix: string
@@ -31,7 +36,7 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
   public abstract registerControllers(controllers: Type[] | string): Promise<void>
   protected abstract handleError(err: any, req: Request, res: Response): Promise<void>
   protected abstract handleSuccess(req: Request, res: Response, action: Action): void
-  protected abstract getParamFromRequest(req: Request, res: Response, paramType: ParamType): any
+  protected abstract getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any
 
   protected transformResult(type: any, value: unknown, useValidator = false): any {
     if (!useValidator || !this.adapterOptions.useValidation) return value

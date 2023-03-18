@@ -1,5 +1,8 @@
 import { createParamDecorator } from './create-param-decorator'
 
-export function QueryParams(): Function {
-  return createParamDecorator('query', true)
+export function QueryParams(propertyName?: string): Function {
+  return createParamDecorator('query', {
+    useValidator: true,
+    propertyName
+  })
 }

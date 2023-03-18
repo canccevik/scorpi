@@ -1,6 +1,6 @@
 import { createParamDecorator } from './create-param-decorator'
 
-export function CookieParams(propertyName?: string): Function {
+export function Cookies(propertyName?: string): Function {
   return createParamDecorator('cookies', {
     useValidator: true,
     propertyName

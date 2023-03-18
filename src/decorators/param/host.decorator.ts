@@ -1,5 +1,5 @@
 import { createParamDecorator } from './create-param-decorator'
 
-export function HostParam(): Function {
+export function Host(): Function {
   return createParamDecorator('hosts')
 }

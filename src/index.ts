@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+
 export * from './scorpi-factory'
 export * from './decorators'
 export * from './exceptions'

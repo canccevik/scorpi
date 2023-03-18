@@ -20,7 +20,6 @@ export function Use(middlewares: Middleware | Middleware[]): Function {
         )
         value = middlewareInstance.use.bind(middlewareInstance)
       }
-
       TypeMetadataStorage.addMiddlewareMetadata({
         target: targetMethod || target,
         value

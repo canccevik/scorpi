@@ -1,17 +1,26 @@
+import { validateSync } from 'class-validator'
+import { plainToInstance } from 'class-transformer'
+
 import { Action, ParamType } from '../metadata'
 import { Middleware, ScorpiExceptionHandler, Type } from '../interfaces'
+import { BadRequestException } from '../exceptions'
 
 export interface AdapterOptions {
   globalPrefix?: string
   exceptionHandler?: Type<ScorpiExceptionHandler>
+  useValidation?: boolean
 }
 
 export abstract class HttpAdapter<App = unknown, Request = unknown, Response = unknown> {
   protected app!: App
   protected globalPrefix: string
 
-  constructor(adapterOptions: AdapterOptions) {
+  constructor(private adapterOptions: AdapterOptions) {
     this.globalPrefix = adapterOptions.globalPrefix || ''
+
+    if (this.adapterOptions.useValidation === undefined) {
+      this.adapterOptions.useValidation = true
+    }
   }
 
   public abstract initialize(): Promise<this>
@@ -24,4 +33,20 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
   protected abstract handleError(err: any, req: Request, res: Response): Promise<void>
   protected abstract handleSuccess(req: Request, res: Response, action: Action): void
   protected abstract getParamFromRequest(req: Request, res: Response, paramType: ParamType): any
+
+  protected transformResult(type: any, value: unknown, useValidator = false): any {
+    if (!useValidator || !this.adapterOptions.useValidation) return value
+
+    const instance: any = plainToInstance(type, value)
+
+    if (!(instance instanceof type)) return value
+
+    const errors = validateSync(instance, { validationError: { target: false } })
+
+    if (errors.length) {
+      const payload = this.adapterOptions.exceptionHandler ? errors : { errors }
+      throw new BadRequestException(payload)
+    }
+    return instance
+  }
 }

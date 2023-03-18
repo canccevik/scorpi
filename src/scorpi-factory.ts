@@ -14,7 +14,8 @@ export class ScorpiFactory {
   ): Promise<ScorpiApplication> {
     const adapterOptions: AdapterOptions = {
       globalPrefix: options.globalPrefix,
-      exceptionHandler: options.exceptionHandler
+      exceptionHandler: options.exceptionHandler,
+      useValidation: options.useValidation
     }
 
     const adapterInstance = new adapter(adapterOptions)

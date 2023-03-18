@@ -14,5 +14,7 @@ export interface ParamMetadata {
   target: object
   value: Function
   index: number
-  type: ParamType
+  paramType: ParamType
+  useValidator: boolean
+  type: any
 }

@@ -65,11 +65,12 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       const actionMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(value)
 
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
-        const actionParams = ParamStorage.getParamsMetadata(controller, value).map((param) =>
-          this.getParamFromRequest(req, res, param.type)
-        )
-
         try {
+          const actionParams = ParamStorage.getParamsMetadata(controller, value).map((param) => {
+            const paramValue = this.getParamFromRequest(req, res, param.paramType)
+            return this.transformResult(param.type, paramValue, param.useValidator)
+          })
+
           this.handleSuccess(req, res, action)
           const response = await value.bind(controllerInstance)(...actionParams)
           response && res.send(response)

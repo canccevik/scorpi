@@ -21,6 +21,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     await this.loadAdapter()
     this.app = this.express()
     this.app.use(this.express.json())
+    await this.loadCors()
     return this
   }
 
@@ -31,6 +32,19 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       this.Router = ExpressRouter as unknown as Type<Router>
     } catch (error) {
       throw new Error('Express package not found. Try to install it: npm install express')
+    }
+  }
+
+  protected async loadCors(): Promise<void> {
+    if (!this.options.cors) return
+
+    const corsOptions = this.options.cors !== true ? this.options.cors : {}
+
+    try {
+      const { default: cors } = await import('cors')
+      this.app.use(cors(corsOptions))
+    } catch (error) {
+      throw new Error('Cors package not found. Try to install it: npm install cors')
     }
   }
 

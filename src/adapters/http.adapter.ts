@@ -1,3 +1,4 @@
+import { CorsOptions } from 'cors'
 import { validateSync } from 'class-validator'
 import { plainToInstance } from 'class-transformer'
 
@@ -10,6 +11,7 @@ export interface AdapterOptions {
   exceptionHandler?: Type<ScorpiExceptionHandler>
   useValidation?: boolean
   useClassTransformer?: boolean
+  cors?: boolean | CorsOptions
 }
 
 export interface ParamFilter {
@@ -29,6 +31,7 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
 
   public abstract initialize(): Promise<this>
   protected abstract loadAdapter(): Promise<void>
+  protected abstract loadCors(): Promise<void>
 
   public abstract listen(port: number): Promise<void>
   public abstract registerErrorHandler(): void

@@ -1,4 +1,5 @@
 import multer from 'multer'
+import cookie from 'cookie'
 import { Container } from 'magnodi'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
@@ -166,7 +167,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
         case 'body':
           return req.body
         case 'cookies':
-          return req.cookies
+          return cookie.parse(req.headers.cookie ?? '')
         case 'headers':
           return req.headers
         case 'hosts':
@@ -185,6 +186,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
           return req.files
       }
     })()
+
     return filter.propertyName && filter.paramType !== 'file' && filter.paramType !== 'files'
       ? param[filter.propertyName]
       : param

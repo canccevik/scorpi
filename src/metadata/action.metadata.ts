@@ -13,6 +13,7 @@ export interface Action {
   contentType?: string
   locationUrl?: string
   headers?: Header[]
+  render?: string
 }
 
 export interface ActionMetadata {

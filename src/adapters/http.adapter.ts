@@ -12,6 +12,12 @@ export interface AdapterOptions {
   useValidation?: boolean
   useClassTransformer?: boolean
   cors?: boolean | CorsOptions
+  viewEngine?: ViewEngineOptions
+}
+
+export interface ViewEngineOptions {
+  name: string
+  views: string
 }
 
 export interface ParamFilter {
@@ -32,13 +38,14 @@ export abstract class HttpAdapter<App = unknown, Request = unknown, Response = u
   public abstract initialize(): Promise<this>
   protected abstract loadAdapter(): Promise<void>
   protected abstract loadCors(): Promise<void>
+  protected abstract setViewEngine(): Promise<void>
 
   public abstract listen(port: number): Promise<void>
   public abstract registerErrorHandler(): void
   public abstract registerGlobalMiddlewares(middlewares: Middleware[] | string): Promise<void>
   public abstract registerControllers(controllers: Type[] | string): Promise<void>
   protected abstract handleError(err: any, req: Request, res: Response): Promise<void>
-  protected abstract handleSuccess(req: Request, res: Response, action: Action): void
+  protected abstract handleSuccess(req: Request, res: Response, action: Action, data: object): void
   protected abstract getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any
 
   protected transformResult(type: any, value: unknown, useValidator = false): any {

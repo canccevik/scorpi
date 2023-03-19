@@ -24,6 +24,7 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     this.app = this.express()
     this.app.use(this.express.json())
     await this.loadCors()
+    await this.setViewEngine()
     return this
   }
 
@@ -47,6 +48,22 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
       this.app.use(cors(corsOptions))
     } catch (error) {
       throw new Error('Cors package not found. Try to install it: npm install cors')
+    }
+  }
+
+  protected async setViewEngine(): Promise<void> {
+    const engine = this.options.viewEngine
+    if (!engine) return
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const viewEngine = await import(engine.name)
+      this.app.set('view engine', engine.name)
+      this.app.set('views', engine.views)
+    } catch (error) {
+      throw new Error(
+        `${engine.name} package not found. Try to install it: npm install ${engine.name}`
+      )
     }
   }
 
@@ -101,9 +118,9 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
             return this.transformResult(param.type, paramValue, param.useValidator)
           })
 
-          this.handleSuccess(req, res, action)
           const response = await value.bind(controllerInstance)(...actionParams)
-          response && res.send(response)
+          this.handleSuccess(req, res, action, response)
+          response && !action.render && res.send(response)
         } catch (error) {
           this.handleError(error, req, res)
         }
@@ -149,12 +166,13 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     })
   }
 
-  protected handleSuccess(req: Request, res: Response, action: Action): void {
+  protected handleSuccess(req: Request, res: Response, action: Action, data: object): void {
     action.statusCode && res.status(action.statusCode)
-    action.headers && action.headers.forEach(({ key, value }) => res.header(key, value))
     action.redirectUrl && res.redirect(action.redirectUrl)
+    action.headers && action.headers.forEach(({ key, value }) => res.setHeader(key, value))
     action.contentType && res.contentType(action.contentType)
     action.locationUrl && res.location(action.locationUrl)
+    action.render && res.render(action.render, data)
   }
 
   protected getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any {

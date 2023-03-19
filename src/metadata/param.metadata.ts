@@ -9,6 +9,8 @@ export type ParamType =
   | 'params'
   | 'query'
   | 'session'
+  | 'file'
+  | 'files'
 
 export interface ParamMetadata {
   target: object
@@ -18,4 +20,5 @@ export interface ParamMetadata {
   useValidator: boolean
   type: any
   propertyName?: string
+  options?: any
 }

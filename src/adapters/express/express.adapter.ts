@@ -1,3 +1,4 @@
+import multer from 'multer'
 import { Container } from 'magnodi'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
@@ -77,10 +78,21 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
 
     actionsMetadata.forEach(({ value, action }) => {
       const actionMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(value)
+      const paramsMetadata = ParamStorage.getParamsMetadata(controller, value)
+
+      paramsMetadata.forEach((param) => {
+        if (param.propertyName) {
+          if (param.paramType === 'file') {
+            actionMiddlewares.push(multer(param.options).single(param.propertyName))
+          } else if (param.paramType === 'files') {
+            actionMiddlewares.push(multer(param.options).array(param.propertyName))
+          }
+        }
+      })
 
       const actionWrapper = async (req: Request, res: Response): Promise<void> => {
         try {
-          const actionParams = ParamStorage.getParamsMetadata(controller, value).map((param) => {
+          const actionParams = paramsMetadata.map((param) => {
             const paramValue = this.getParamFromRequest(req, res, {
               paramType: param.paramType,
               propertyName: param.propertyName
@@ -167,8 +179,14 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
           return req.query
         case 'session':
           return (req as any).session
+        case 'file':
+          return req.file
+        case 'files':
+          return req.files
       }
     })()
-    return filter.propertyName ? param[filter.propertyName] : param
+    return filter.propertyName && filter.paramType !== 'file' && filter.paramType !== 'files'
+      ? param[filter.propertyName]
+      : param
   }
 }

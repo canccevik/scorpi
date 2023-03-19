@@ -4,6 +4,7 @@ import { ParamStorage } from '../../storages'
 export interface ParamOptions {
   useValidator?: boolean
   propertyName?: string
+  options?: any
 }
 
 export function createParamDecorator(paramType: ParamType, options?: ParamOptions): Function {
@@ -18,6 +19,7 @@ export function createParamDecorator(paramType: ParamType, options?: ParamOption
       index: parameterIndex,
       useValidator: options?.useValidator ?? false,
       propertyName: options?.propertyName,
+      options: options?.options,
       paramType,
       type
     })

@@ -1,17 +1,13 @@
 import multer from 'multer'
 import cookie from 'cookie'
-import { Container } from 'magnodi'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
-import { Middleware, Type, ScorpiExceptionHandler } from '../../interfaces'
-import { AdapterOptions, HttpAdapter, ParamFilter } from '../http.adapter'
-import { ActionStorage, ParamStorage, TypeMetadataStorage } from '../../storages'
-import { ExpressMiddleware } from './express-middleware.interface'
-import { HttpException, InternalServerErrorException } from '../../exceptions'
-import { Action } from '../../metadata'
-import { getClassesBySuffix } from '../../utils'
+import { Middleware, Type } from '../../interfaces'
+import { AdapterOptions, HttpAdapter } from '../http.adapter'
+import { Action, Header } from '../../metadata'
+import { HttpStatus } from '../../enums'
 
-export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response> {
+export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response, RequestHandler> {
   private express!: typeof e
   private Router!: Type<Router>
 
@@ -19,30 +15,20 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     super(options)
   }
 
-  public async initialize(): Promise<this> {
-    await this.loadAdapter()
-    this.app = this.express()
-    this.app.use(this.express.json())
-    await this.loadCors()
-    await this.setViewEngine()
-    return this
-  }
-
   protected async loadAdapter(): Promise<void> {
     try {
       const { default: express, Router: ExpressRouter } = await import('express')
       this.express = express
       this.Router = ExpressRouter as unknown as Type<Router>
+      this.app = this.express()
+      this.app.use(this.express.json())
     } catch (error) {
       throw new Error('Express package not found. Try to install it: npm install express')
     }
   }
 
   protected async loadCors(): Promise<void> {
-    if (!this.options.cors) return
-
-    const corsOptions = this.options.cors !== true ? this.options.cors : {}
-
+    const corsOptions = typeof this.options.cors !== 'boolean' ? this.options.cors : {}
     try {
       const { default: cors } = await import('cors')
       this.app.use(cors(corsOptions))
@@ -52,111 +38,15 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
   }
 
   protected async setViewEngine(): Promise<void> {
-    const engine = this.options.viewEngine
-    if (!engine) return
-
+    const { name, views } = this.options.viewEngine!
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const viewEngine = await import(engine.name)
-      this.app.set('view engine', engine.name)
-      this.app.set('views', engine.views)
+      const _ = await import(name)
+      this.app.set('view engine', name)
+      this.app.set('views', views)
     } catch (error) {
-      throw new Error(
-        `${engine.name} package not found. Try to install it: npm install ${engine.name}`
-      )
+      throw new Error(`${name} package not found. Try to install it: npm install ${name}`)
     }
-  }
-
-  public async listen(port: number): Promise<void> {
-    await this.app.listen(port)
-  }
-
-  public async registerControllers(controllers: Type[] | string): Promise<void> {
-    if (typeof controllers === 'string') {
-      controllers = await getClassesBySuffix(controllers)
-    }
-
-    controllers.forEach((controller) => {
-      Container.provide(controller, controller)
-
-      const controllerInstance = Container.resolve(controller)
-      const controllerMetadata = TypeMetadataStorage.getControllerMetadataByTarget(controller)
-
-      const controllerMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(controller)
-      const router = this.createRouterAndRegisterActions(controller, controllerInstance)
-
-      const controllerPath = this.globalPrefix + controllerMetadata?.options.name
-      this.app.use(controllerPath, ...(controllerMiddlewares as RequestHandler[]), router)
-    })
-  }
-
-  private createRouterAndRegisterActions(controller: Type, controllerInstance: unknown): e.Router {
-    const router = new this.Router()
-    const actionsMetadata = ActionStorage.getActionsMetadataByTarget(controller)
-
-    actionsMetadata.forEach(({ value, action }) => {
-      const actionMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(value)
-      const paramsMetadata = ParamStorage.getParamsMetadata(controller, value)
-
-      paramsMetadata.forEach((param) => {
-        if (param.propertyName) {
-          if (param.paramType === 'file') {
-            actionMiddlewares.push(multer(param.options).single(param.propertyName))
-          } else if (param.paramType === 'files') {
-            actionMiddlewares.push(multer(param.options).array(param.propertyName))
-          }
-        }
-      })
-
-      const actionWrapper = async (req: Request, res: Response): Promise<void> => {
-        try {
-          const actionParams = paramsMetadata.map((param) => {
-            const paramValue = this.getParamFromRequest(req, res, {
-              paramType: param.paramType,
-              propertyName: param.propertyName
-            })
-            return this.transformResult(param.type, paramValue, param.useValidator)
-          })
-
-          const response = await value.bind(controllerInstance)(...actionParams)
-          this.handleSuccess(req, res, action, response)
-          response && !action.render && res.send(response)
-        } catch (error) {
-          this.handleError(error, req, res)
-        }
-      }
-
-      if (!action.method || !action.name) return
-      router[action.method](action.name, ...[actionMiddlewares as RequestHandler[]], actionWrapper)
-    })
-    return router
-  }
-
-  public async registerGlobalMiddlewares(middlewares: Middleware[]): Promise<void> {
-    if (typeof middlewares === 'string') {
-      middlewares = await getClassesBySuffix(middlewares)
-    }
-
-    middlewares.forEach((middleware) => {
-      if (middleware.prototype.use) {
-        const middlewareInstance = Container.resolve<ExpressMiddleware>(middleware as Type)
-        return this.app.use(middlewareInstance.use.bind(middlewareInstance))
-      }
-      this.app.use(middleware as RequestHandler)
-    })
-  }
-
-  protected async handleError(err: any, req: Request, res: Response): Promise<void> {
-    const error = err.payload ? (err as HttpException) : new InternalServerErrorException()
-    !err.payload && console.error(err)
-
-    const exceptionHandler = this.options.exceptionHandler
-
-    if (exceptionHandler) {
-      const exceptionHandlerInstance = Container.resolve<ScorpiExceptionHandler>(exceptionHandler)
-      return exceptionHandlerInstance.catch(error, req, res)
-    }
-    res.status(error.statusCode).json(error.payload)
   }
 
   public registerErrorHandler(): void {
@@ -166,47 +56,108 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     })
   }
 
-  protected handleSuccess(req: Request, res: Response, action: Action, data: object): void {
-    action.statusCode && res.status(action.statusCode)
-    action.redirectUrl && res.redirect(action.redirectUrl)
-    action.headers && action.headers.forEach(({ key, value }) => res.setHeader(key, value))
-    action.contentType && res.contentType(action.contentType)
-    action.locationUrl && res.location(action.locationUrl)
-    action.render && res.render(action.render, data)
+  protected registerAction(
+    router: any,
+    action: Action,
+    middlewares: Middleware[],
+    handler: RequestHandler
+  ): void {
+    router[action.method!](action.name, ...middlewares, handler)
   }
 
-  protected getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any {
-    const param = ((): any => {
-      switch (filter.paramType) {
-        case 'req':
-          return req
-        case 'res':
-          return res
-        case 'body':
-          return req.body
-        case 'cookies':
-          return cookie.parse(req.headers.cookie ?? '')
-        case 'headers':
-          return req.headers
-        case 'hosts':
-          return req.hostname
-        case 'ip':
-          return req.ip
-        case 'params':
-          return req.params
-        case 'query':
-          return req.query
-        case 'session':
-          return (req as any).session
-        case 'file':
-          return req.file
-        case 'files':
-          return req.files
-      }
-    })()
+  protected getSingleFileUploadMiddleware(options: any, propertyName: string): Middleware {
+    return multer(options).single(propertyName)
+  }
 
-    return filter.propertyName && filter.paramType !== 'file' && filter.paramType !== 'files'
-      ? param[filter.propertyName]
-      : param
+  protected getMultiFileUploadMiddleware(options: any, propertyName: string): Middleware {
+    return multer(options).array(propertyName)
+  }
+
+  protected createRouter(): any {
+    return new this.Router()
+  }
+
+  public async listen(port: number): Promise<void> {
+    await this.app.listen(port)
+  }
+
+  protected addRequestHandler(path: string | RegExp, ...handlers: RequestHandler[]): void {
+    this.app.use(path, ...handlers)
+  }
+
+  protected addMiddleware(...middlewares: Middleware[]): void {
+    this.app.use(...(middlewares as RequestHandler[]))
+  }
+
+  protected send(res: Response, payload: any): void {
+    res.send(payload)
+  }
+
+  protected sendWithStatus(res: Response, payload: any, statusCode: HttpStatus): void {
+    res.status(statusCode).json(payload)
+  }
+
+  protected setStatusCode(res: Response, statusCode: number): void {
+    res.status(statusCode)
+  }
+
+  protected setRedirectUrl(res: Response, redirectUrl: string): void {
+    res.redirect(redirectUrl)
+  }
+
+  protected setHeaders(res: Response, headers: Header[]): void {
+    headers.forEach((header) => res.setHeader(header.key, header.value))
+  }
+
+  protected setContentType(res: Response, contentType: string): void {
+    res.contentType(contentType)
+  }
+
+  protected setLocationUrl(res: Response, locationUrl: string): void {
+    res.location(locationUrl)
+  }
+
+  protected renderView(res: Response, view: string, data: any): void {
+    res.render(view, data)
+  }
+
+  protected getBodyFromRequest(req: Request): any {
+    return req.body
+  }
+
+  protected getCookiesFromRequest(req: Request): any {
+    return cookie.parse(req.headers.cookie ?? '')
+  }
+
+  protected getHeadersFromRequest(req: Request): any {
+    return req.headers
+  }
+
+  protected getHostNameFromRequest(req: Request): any {
+    return req.hostname
+  }
+
+  protected getIpFromRequest(req: Request): any {
+    return req.ip
+  }
+
+  protected getParamsFromRequest(req: Request): any {
+    return req.params
+  }
+
+  protected getQueryFromRequest(req: Request): any {
+    return req.query
+  }
+
+  protected getSessionFromRequest(req: Request): any {
+    return (req as any).session
+  }
+
+  protected getFileFromRequest(req: Request): any {
+    return req.file
+  }
+
+  protected getFilesFromRequest(req: Request): any {
+    return req.files
   }
 }

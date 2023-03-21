@@ -1,8 +1,6 @@
-import multer from 'multer'
-
 import { createParamDecorator } from './create-param-decorator'
 
-export function UploadedFile(propertyName: string, options?: multer.Options): Function {
+export function UploadedFile(propertyName: string, options?: any): Function {
   return createParamDecorator('file', {
     propertyName,
     options

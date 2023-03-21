@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
 
-import { HttpException } from '../../exceptions'
+import { ScorpiExceptionHandler } from '../../interfaces'
 
-export interface ExpressExceptionHandler {
-  catch(exception: HttpException, req: Request, res: Response): void
-}
+export type ExpressExceptionHandler = ScorpiExceptionHandler<Request, Response>

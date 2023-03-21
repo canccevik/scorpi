@@ -1,3 +1,5 @@
-import { ExpressExceptionHandler } from '../adapters'
+import { HttpException } from '../exceptions'
 
-export type ScorpiExceptionHandler = ExpressExceptionHandler
+export interface ScorpiExceptionHandler<Request = unknown, Response = unknown> {
+  catch(exception: HttpException, req: Request, res: Response): void
+}

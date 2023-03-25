@@ -2,6 +2,8 @@ import multer from 'multer'
 import cookie from 'cookie'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
+import { IncomingHttpHeaders } from 'http'
+
 import { Middleware, Type } from '../../interfaces'
 import { AdapterOptions, HttpAdapter } from '../http.adapter'
 import { Action, Header } from '../../metadata'
@@ -121,23 +123,23 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     res.render(view, data)
   }
 
-  protected getBodyFromRequest(req: Request): any {
+  protected getBodyFromRequest(req: Request): unknown {
     return req.body
   }
 
-  protected getCookiesFromRequest(req: Request): any {
+  protected getCookiesFromRequest(req: Request): Record<string, string> {
     return cookie.parse(req.headers.cookie ?? '')
   }
 
-  protected getHeadersFromRequest(req: Request): any {
+  protected getHeadersFromRequest(req: Request): IncomingHttpHeaders {
     return req.headers
   }
 
-  protected getHostNameFromRequest(req: Request): any {
+  protected getHostNameFromRequest(req: Request): string {
     return req.hostname
   }
 
-  protected getIpFromRequest(req: Request): any {
+  protected getIpFromRequest(req: Request): string {
     return req.ip
   }
 
@@ -145,19 +147,19 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     return req.params
   }
 
-  protected getQueryFromRequest(req: Request): any {
+  protected getQueryFromRequest(req: Request): unknown {
     return req.query
   }
 
-  protected getSessionFromRequest(req: Request): any {
+  protected getSessionFromRequest(req: Request): unknown {
     return (req as any).session
   }
 
-  protected getFileFromRequest(req: Request): any {
+  protected getFileFromRequest(req: Request): unknown {
     return req.file
   }
 
-  protected getFilesFromRequest(req: Request): any {
+  protected getFilesFromRequest(req: Request): unknown {
     return req.files
   }
 }

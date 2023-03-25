@@ -3,6 +3,8 @@ import { CorsOptions } from 'cors'
 import { validateSync } from 'class-validator'
 import { plainToInstance } from 'class-transformer'
 
+import { IncomingHttpHeaders } from 'http'
+
 import { Action, Header, ParamType } from '../metadata'
 import { Middleware, ScorpiExceptionHandler, ScorpiMiddleware, Type } from '../interfaces'
 import { BadRequestException, HttpException, InternalServerErrorException } from '../exceptions'
@@ -72,16 +74,16 @@ export abstract class HttpAdapter<
   protected abstract setLocationUrl(res: Response, locationUrl: string): void
   protected abstract renderView(res: Response, view: string, data: any): void
 
-  protected abstract getBodyFromRequest(req: Request): any
-  protected abstract getCookiesFromRequest(req: Request): any
-  protected abstract getHeadersFromRequest(req: Request): any
-  protected abstract getHostNameFromRequest(req: Request): any
-  protected abstract getIpFromRequest(req: Request): any
+  protected abstract getBodyFromRequest(req: Request): unknown
+  protected abstract getCookiesFromRequest(req: Request): Record<string, string>
+  protected abstract getHeadersFromRequest(req: Request): IncomingHttpHeaders
+  protected abstract getHostNameFromRequest(req: Request): string
+  protected abstract getIpFromRequest(req: Request): string
   protected abstract getParamsFromRequest(req: Request): any
-  protected abstract getQueryFromRequest(req: Request): any
-  protected abstract getSessionFromRequest(req: Request): any
-  protected abstract getFileFromRequest(req: Request): any
-  protected abstract getFilesFromRequest(req: Request): any
+  protected abstract getQueryFromRequest(req: Request): unknown
+  protected abstract getSessionFromRequest(req: Request): unknown
+  protected abstract getFileFromRequest(req: Request): unknown
+  protected abstract getFilesFromRequest(req: Request): unknown
 
   public async initialize(): Promise<this> {
     await this.loadAdapter()

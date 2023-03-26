@@ -2,7 +2,7 @@ import multer from 'multer'
 import cookie from 'cookie'
 import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
 
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders, Server } from 'http'
 
 import { Middleware, Type } from '../../interfaces'
 import { AdapterOptions, HttpAdapter } from '../http.adapter'
@@ -79,8 +79,8 @@ export class ExpressAdapter extends HttpAdapter<e.Application, Request, Response
     return new this.Router()
   }
 
-  public async listen(port: number): Promise<void> {
-    await this.app.listen(port)
+  public async listen(port: number): Promise<Server> {
+    return this.app.listen(port)
   }
 
   protected addRequestHandler(path: string | RegExp, ...handlers: RequestHandler[]): void {

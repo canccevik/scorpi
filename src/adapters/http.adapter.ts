@@ -3,7 +3,7 @@ import { CorsOptions } from 'cors'
 import { validateSync } from 'class-validator'
 import { plainToInstance } from 'class-transformer'
 
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders, Server } from 'http'
 
 import { Action, Header, ParamType } from '../metadata'
 import { Middleware, ScorpiExceptionHandler, ScorpiMiddleware, Type } from '../interfaces'
@@ -61,7 +61,7 @@ export abstract class HttpAdapter<
     handler: RequestHandler
   ): void
   protected abstract createRouter(): any
-  public abstract listen(port: number): Promise<void>
+  public abstract listen(port: number): Promise<Server>
   protected abstract addRequestHandler(path: string | RegExp, ...handlers: RequestHandler[]): void
   protected abstract addMiddleware(...middlewares: Middleware[]): void
   protected abstract send(res: Response, payload: any): void
@@ -84,6 +84,10 @@ export abstract class HttpAdapter<
   protected abstract getSessionFromRequest(req: Request): unknown
   protected abstract getFileFromRequest(req: Request): unknown
   protected abstract getFilesFromRequest(req: Request): unknown
+
+  public getApp(): any {
+    return this.app
+  }
 
   public async initialize(): Promise<this> {
     await this.loadAdapter()

@@ -1,3 +1,5 @@
+import { Server } from 'http'
+
 import { HttpAdapter } from './adapters'
 import { ScorpiOptions } from './scorpi-factory'
 
@@ -8,7 +10,11 @@ export class ScorpiApplication {
     this.adapter.registerErrorHandler()
   }
 
-  public async listen(port: number): Promise<void> {
-    await this.adapter.listen(port)
+  public async listen(port: number): Promise<Server> {
+    return this.adapter.listen(port)
+  }
+
+  public getApp(): any {
+    return this.adapter.getApp()
   }
 }

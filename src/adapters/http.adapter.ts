@@ -253,7 +253,10 @@ export abstract class HttpAdapter<
 
     if (!(instance instanceof type)) return value
 
-    const errors = validateSync(instance, { validationError: { target: false } })
+    const errors = validateSync(instance, {
+      validationError: { target: false },
+      forbidUnknownValues: false
+    })
 
     if (errors.length) {
       const payload = this.adapterOptions.exceptionHandler ? errors : { errors }

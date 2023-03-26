@@ -23,35 +23,35 @@ describe('[Express] HTTP Method Decorators', () => {
     server.close()
   })
 
-  it('should get method work', async () => {
+  it('should get decorator work', async () => {
     const res = await request.get(controllerUri)
 
     expect(HttpStatus.OK).toEqual(res.statusCode)
     expect(res.text).toEqual('OK')
   })
 
-  it('should post method work', async () => {
+  it('should post decorator work', async () => {
     const res = await request.post(controllerUri)
 
     expect(HttpStatus.CREATED).toEqual(res.statusCode)
     expect(res.text).toEqual('OK')
   })
 
-  it('should put method work', async () => {
+  it('should put decorator work', async () => {
     const res = await request.put(controllerUri)
 
     expect(HttpStatus.OK).toEqual(res.statusCode)
     expect(res.text).toEqual('OK')
   })
 
-  it('should patch method work', async () => {
+  it('should patch decorator work', async () => {
     const res = await request.patch(controllerUri)
 
     expect(HttpStatus.OK).toEqual(res.statusCode)
     expect(res.text).toEqual('OK')
   })
 
-  it('should delete method work', async () => {
+  it('should delete decorator work', async () => {
     const res = await request.delete(controllerUri)
 
     expect(HttpStatus.OK).toEqual(res.statusCode)

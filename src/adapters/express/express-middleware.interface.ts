@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
 
-export interface ExpressMiddleware {
-  use(req: Request, res: Response, next: NextFunction): void
-}
+import { ScorpiMiddleware } from '../../interfaces'
+
+export type ExpressMiddleware = ScorpiMiddleware<Request, Response, NextFunction>

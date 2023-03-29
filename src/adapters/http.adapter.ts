@@ -5,7 +5,7 @@ import { plainToInstance } from 'class-transformer'
 
 import { IncomingHttpHeaders, Server } from 'http'
 
-import { Action, Header, ParamType } from '../metadata'
+import { Action, Header, ParamMetadata, ParamType } from '../metadata'
 import { Middleware, ScorpiExceptionHandler, ScorpiMiddleware, Type } from '../interfaces'
 import { BadRequestException, HttpException, InternalServerErrorException } from '../exceptions'
 import { getClassesBySuffix } from '../utils'
@@ -123,44 +123,65 @@ export abstract class HttpAdapter<
     const router = this.createRouter()
     const actionsMetadata = ActionStorage.getActionsMetadataByTarget(controller)
 
-    actionsMetadata.forEach(({ value, action }) => {
+    actionsMetadata.forEach(async ({ value, action }) => {
       const actionMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(value)
       const paramsMetadata = ParamStorage.getParamsMetadata(controller, value)
 
-      paramsMetadata.forEach((param) => {
-        if (param.propertyName) {
-          if (param.paramType === 'file') {
-            const middleware = this.getSingleFileUploadMiddleware(param.options, param.propertyName)
-            actionMiddlewares.push(middleware)
-          } else if (param.paramType === 'files') {
-            const middleware = this.getMultiFileUploadMiddleware(param.options, param.propertyName)
-            actionMiddlewares.push(middleware)
-          }
-        }
-      })
+      this.addFileUploadMiddleware(paramsMetadata, actionMiddlewares)
 
-      const actionWrapper = async (req: Request, res: Response): Promise<void> => {
-        try {
-          const actionParams = paramsMetadata.map((param) => {
-            const paramValue = this.getParamFromRequest(req, res, {
-              paramType: param.paramType,
-              propertyName: param.propertyName
-            })
-            return this.transformResult(param.type, paramValue, param.useValidator)
-          })
-
-          const response = await value.bind(controllerInstance)(...actionParams)
-          this.handleSuccess(res, action, response)
-          response && !action.render && this.send(res, response)
-        } catch (error) {
-          this.handleError(error, req, res)
-        }
-      }
+      const actionWrapper = await this.getActionHandler(
+        action,
+        paramsMetadata,
+        value,
+        controllerInstance
+      )
 
       if (!action.method || !action.name) return
       this.registerAction(router, action, actionMiddlewares, actionWrapper as RequestHandler)
     })
     return router
+  }
+
+  private addFileUploadMiddleware(params: ParamMetadata[], actionMiddlewares: Middleware[]): void {
+    params.forEach((param) => {
+      if (!param.propertyName) return
+
+      if (param.paramType === 'file') {
+        const middleware = this.getSingleFileUploadMiddleware(param.options, param.propertyName)
+        actionMiddlewares.push(middleware)
+      } else if (param.paramType === 'files') {
+        const middleware = this.getMultiFileUploadMiddleware(param.options, param.propertyName)
+        actionMiddlewares.push(middleware)
+      }
+    })
+  }
+
+  private async getActionHandler(
+    action: Action,
+    params: ParamMetadata[],
+    value: Function,
+    controllerInstance: unknown
+  ): Promise<Function> {
+    return async (req: Request, res: Response): Promise<void> => {
+      try {
+        const actionParams = this.getActionParams(req, res, params)
+        const response = await value.bind(controllerInstance)(...actionParams)
+        this.handleSuccess(res, action, response)
+        response && !action.render && this.send(res, response)
+      } catch (error) {
+        this.handleError(error, req, res)
+      }
+    }
+  }
+
+  private getActionParams(req: Request, res: Response, params: ParamMetadata[]): any {
+    return params.map((param) => {
+      const paramValue = this.getParamFromRequest(req, res, {
+        paramType: param.paramType,
+        propertyName: param.propertyName
+      })
+      return this.transformResult(param.type, paramValue, param.useValidator)
+    })
   }
 
   public async registerGlobalMiddlewares(middlewares: Middleware[] | string): Promise<void> {

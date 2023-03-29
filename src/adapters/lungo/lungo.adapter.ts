@@ -1,22 +1,13 @@
-import multer from 'multer'
-import cookie from 'cookie'
-import e, { RequestHandler, Router, Request, Response, NextFunction } from 'express'
+import { Lungo, Request, Response, IHandler, Router, uploadFile, INextFunc } from 'lungojs'
 
-import { IncomingHttpHeaders, Server } from 'http'
+import { Server, IncomingHttpHeaders } from 'http'
 
-import { Middleware, Type } from '../../interfaces'
-import { AdapterOptions, HttpAdapter } from '../http.adapter'
-import { Action, Header } from '../../metadata'
 import { HttpStatus } from '../../enums'
+import { Middleware, Type } from '../../interfaces'
+import { Action, Header } from '../../metadata'
+import { AdapterOptions, HttpAdapter } from '../http.adapter'
 
-export class ExpressAdapter extends HttpAdapter<
-  e.Application,
-  Request,
-  Response,
-  RequestHandler,
-  Router
-> {
-  private express!: typeof e
+export class LungoAdapter extends HttpAdapter<Lungo, Request, Response, IHandler, Router> {
   private Router!: Type<Router>
 
   constructor(private readonly options: AdapterOptions) {
@@ -25,13 +16,20 @@ export class ExpressAdapter extends HttpAdapter<
 
   protected async loadAdapter(): Promise<void> {
     try {
-      const { default: express, Router: ExpressRouter } = await import('express')
-      this.express = express
-      this.Router = ExpressRouter as unknown as Type<Router>
-      this.app = this.express()
-      this.app.use(this.express.json())
+      const { Lungo, Router } = await import('lungojs')
+      this.app = new Lungo()
+      this.Router = Router as unknown as Type<Router>
     } catch (error) {
-      throw new Error('Express package not found. Try to install it: npm install express')
+      throw new Error('Lungo package not found. Try to install it: npm install lungojs')
+    }
+
+    try {
+      const { default: cookieParser } = await import('cookie-parser')
+      this.app.use(cookieParser() as unknown as IHandler)
+    } catch (error) {
+      throw new Error(
+        'cookie-parser package not found. Try to install it: npm install cookie-parser'
+      )
     }
   }
 
@@ -46,30 +44,23 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected async setViewEngine(): Promise<void> {
-    const { name, views } = this.options.viewEngine!
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const _ = await import(name)
-      this.app.set('view engine', name)
-      this.app.set('views', views)
-    } catch (error) {
-      throw new Error(`${name} package not found. Try to install it: npm install ${name}`)
-    }
+    return
   }
 
   public registerErrorHandler(): void {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    this.app.on('error', (req: Request, res: Response, err: Error) => {
       this.handleError(err, req, res)
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected getSingleFileUploadMiddleware(options: any, propertyName: string): Middleware {
-    return multer(options).single(propertyName)
+    return uploadFile()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected getMultiFileUploadMiddleware(options: any, propertyName: string): Middleware {
-    return multer(options).array(propertyName)
+    return uploadFile()
   }
 
   protected createRouter(): Router {
@@ -80,21 +71,22 @@ export class ExpressAdapter extends HttpAdapter<
     router: Router,
     action: Action,
     middlewares: Middleware[],
-    handler: RequestHandler
+    handler: IHandler
   ): void {
-    router[action.method!](action.name!, middlewares as RequestHandler[], handler)
+    router[action.method!](action.name as string, middlewares as IHandler[], handler)
   }
 
   protected addRequestHandler(
     path: string | RegExp,
-    middlewares: RequestHandler[],
+    middlewares: IHandler[],
     router: Router
   ): void {
-    this.app.use(path, middlewares, router)
+    middlewares.forEach((middleware) => router.use(middleware))
+    this.app.use(path as string, router)
   }
 
   protected addMiddleware(...middlewares: Middleware[]): void {
-    this.app.use(...(middlewares as RequestHandler[]))
+    middlewares.forEach((middleware) => this.app.use(middleware as INextFunc))
   }
 
   public async listen(port: number): Promise<Server> {
@@ -106,7 +98,7 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected sendWithStatus(res: Response, payload: any, statusCode: HttpStatus): void {
-    res.status(statusCode).json(payload)
+    res.status(statusCode).send(payload)
   }
 
   protected setStatusCode(res: Response, statusCode: number): void {
@@ -122,11 +114,11 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected setContentType(res: Response, contentType: string): void {
-    res.contentType(contentType)
+    res.type(contentType)
   }
 
   protected setLocationUrl(res: Response, locationUrl: string): void {
-    res.location(locationUrl)
+    res.setHeader('Location', locationUrl)
   }
 
   protected renderView(res: Response, view: string, data: any): void {
@@ -138,7 +130,7 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected getCookiesFromRequest(req: Request): Record<string, string> {
-    return cookie.parse(req.headers.cookie ?? '')
+    return req.cookies as Record<string, string>
   }
 
   protected getHeadersFromRequest(req: Request): IncomingHttpHeaders {
@@ -146,11 +138,11 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected getHostNameFromRequest(req: Request): string {
-    return req.hostname
+    return req.headers['host'] as string
   }
 
   protected getIpFromRequest(req: Request): string {
-    return req.ip
+    return req.ip as string
   }
 
   protected getParamsFromRequest(req: Request): any {
@@ -166,7 +158,7 @@ export class ExpressAdapter extends HttpAdapter<
   }
 
   protected getFileFromRequest(req: Request): unknown {
-    return req.file
+    return req.files
   }
 
   protected getFilesFromRequest(req: Request): unknown {

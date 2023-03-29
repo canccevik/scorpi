@@ -35,7 +35,8 @@ export abstract class HttpAdapter<
   App = unknown,
   Request = unknown,
   Response = unknown,
-  RequestHandler = unknown
+  RequestHandler = unknown,
+  Router = unknown
 > {
   protected app!: App
   protected globalPrefix: string
@@ -54,16 +55,20 @@ export abstract class HttpAdapter<
   protected abstract getSingleFileUploadMiddleware(options: any, propertyName: string): Middleware
   protected abstract getMultiFileUploadMiddleware(options: any, propertyName: string): Middleware
 
+  protected abstract createRouter(): Router
   protected abstract registerAction(
-    router: any,
+    router: Router,
     action: Action,
     middlewares: Middleware[],
     handler: RequestHandler
   ): void
-  protected abstract createRouter(): any
-  public abstract listen(port: number): Promise<Server>
-  protected abstract addRequestHandler(path: string | RegExp, ...handlers: RequestHandler[]): void
+  protected abstract addRequestHandler(
+    path: string | RegExp,
+    middlewares: RequestHandler[],
+    router: Router
+  ): void
   protected abstract addMiddleware(...middlewares: Middleware[]): void
+  public abstract listen(port: number): Promise<Server>
   protected abstract send(res: Response, payload: any): void
   protected abstract sendWithStatus(res: Response, payload: any, statusCode: HttpStatus): void
 
@@ -106,7 +111,7 @@ export abstract class HttpAdapter<
       controllers = await getClassesBySuffix(controllers)
     }
 
-    controllers.forEach((controller) => {
+    controllers.forEach(async (controller) => {
       Container.provide(controller, controller)
 
       const controllerInstance = Container.resolve(controller)
@@ -114,12 +119,15 @@ export abstract class HttpAdapter<
       const controllerMiddlewares = TypeMetadataStorage.getMiddlewaresByTarget(controller)
       const controllerPath = this.globalPrefix + controllerMetadata?.options.name
 
-      const router = this.createRouterAndRegisterActions(controller, controllerInstance)
-      this.addRequestHandler(controllerPath, ...(controllerMiddlewares as RequestHandler[]), router)
+      const router = await this.createRouterAndRegisterActions(controller, controllerInstance)
+      this.addRequestHandler(controllerPath, controllerMiddlewares as RequestHandler[], router)
     })
   }
 
-  protected createRouterAndRegisterActions(controller: Type, controllerInstance: unknown): any {
+  private async createRouterAndRegisterActions(
+    controller: Type,
+    controllerInstance: unknown
+  ): Promise<Router> {
     const router = this.createRouter()
     const actionsMetadata = ActionStorage.getActionsMetadataByTarget(controller)
 

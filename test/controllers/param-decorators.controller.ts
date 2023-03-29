@@ -15,7 +15,7 @@ import {
   Res,
   Response as ScorpiResponse,
   Cookies
-} from '../../../src'
+} from '../../src'
 
 @Controller('/param-decorators')
 export class ParamDecoratorsController {

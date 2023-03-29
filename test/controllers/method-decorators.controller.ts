@@ -10,7 +10,7 @@ import {
   Put,
   Redirect,
   StatusCode
-} from '../../../src'
+} from '../../src'
 
 @Controller('/method-decorators')
 export class MethodDecoratorsController {

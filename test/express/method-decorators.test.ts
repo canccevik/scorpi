@@ -2,20 +2,21 @@ import { SuperAgentTest, agent } from 'supertest'
 
 import { Server } from 'http'
 
-import { ExpressAdapter, HttpStatus, ScorpiFactory } from '../../../src'
-import { ScorpiApplication } from '../../../src/scorpi-application'
-import { MethodDecoratorsController } from './method-decorators.controller'
+import { ExpressAdapter, HttpStatus, ScorpiFactory } from '../../src'
+import { ScorpiApplication } from '../../src/scorpi-application'
+import { MethodDecoratorsController } from '../controllers'
 
 describe('[Express] HTTP Method Decorators', () => {
   let app: ScorpiApplication
   let request: SuperAgentTest
   let server: Server
 
+  const port = 3000
   const controllerUri = '/method-decorators'
 
   beforeAll(async () => {
     app = await ScorpiFactory.create(ExpressAdapter, { controllers: [MethodDecoratorsController] })
-    server = await app.listen(3000)
+    server = await app.listen(port)
     request = agent(app.getApp())
   })
 

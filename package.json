@@ -1,11 +1,20 @@
 {
   "name": "scorpi",
-  "version": "0.0.1",
-  "description": "",
+  "version": "1.0.4",
+  "description": "💎 A modern web framework that is built on top of Express and Lungo. It provides a decorator-based approach for building scalable and well-structured APIs.",
   "author": "Can Çevik <mazlumcancevik@gmail.com>",
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "express",
+    "lungo",
+    "framework",
+    "decorators"
+  ],
   "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src"
+  ],
   "scripts": {
     "build": "tsc",
     "build:dev": "tsc --watch",
@@ -45,9 +54,6 @@
     "reflect-metadata": "^0.1.13"
   },
   "optionalDependencies": {
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
     "lungojs": "^1.1.1"
   },
   "repository": {
@@ -57,5 +63,8 @@
   "bugs": {
     "url": "https://github.com/canccevik/scorpi/issues"
   },
-  "homepage": "https://github.com/canccevik/scorpi#readme"
+  "homepage": "https://github.com/canccevik/scorpi#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }

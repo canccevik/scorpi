@@ -68,7 +68,7 @@
 
 3. Install class validation and class transformation packages:
 
-   ```ts
+   ```bash
    npm install class-validator class-transformer
    ```
 

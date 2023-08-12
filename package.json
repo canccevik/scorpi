@@ -16,6 +16,7 @@
     "dist/src"
   ],
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "tsc",
     "build:dev": "tsc --watch",
     "test": "jest --verbose --maxWorkers=1 --detectOpenHandles --forceExit",

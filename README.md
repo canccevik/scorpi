@@ -48,9 +48,23 @@
 
 1. Install scorpi:
 
-   ```ts
-   npm install scorpi
-   ```
+   Using npm:
+
+    ```js
+    npm install scorpi
+    ```
+
+    Using yarn:
+
+    ```js
+    yarn add scorpi
+    ```
+
+    Using pnpm:
+
+    ```js
+    pnpm add scorpi
+    ```
 
 2. Install web framework:
 

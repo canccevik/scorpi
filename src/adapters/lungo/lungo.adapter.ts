@@ -1,4 +1,13 @@
-import { Lungo, Request, Response, IHandler, Router, fileUploader, INextFunc } from 'lungojs'
+import {
+  Lungo,
+  Request,
+  Response,
+  IHandler,
+  Router,
+  fileUploader,
+  INextFunc,
+  bodyParser
+} from 'lungojs'
 
 import { Server, IncomingHttpHeaders } from 'http'
 
@@ -18,6 +27,7 @@ export class LungoAdapter extends HttpAdapter<Lungo, Request, Response, IHandler
     try {
       const { Lungo, Router } = await import('lungojs')
       this.app = new Lungo()
+      this.app.use(bodyParser())
       this.Router = Router as unknown as Type<Router>
     } catch (error) {
       throw new Error('Lungo package not found. Try to install it: npm install lungojs')

@@ -27,13 +27,13 @@ describe('[Lungo] Param Decorators', () => {
   it('should req decorator work', async () => {
     const res = await request.get(controllerUri + '/req')
 
-    expect(res.text).toEqual(controllerUri)
+    expect(res.text).toEqual(controllerUri + '/req')
   })
 
   it('should request decorator work', async () => {
     const res = await request.get(controllerUri + '/request')
 
-    expect(res.text).toEqual(controllerUri)
+    expect(res.text).toEqual(controllerUri + '/request')
   })
 
   it('should res decorator work', async () => {

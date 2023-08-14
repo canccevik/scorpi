@@ -1,4 +1,4 @@
-import { Lungo, Request, Response, IHandler, Router, uploadFile, INextFunc } from 'lungojs'
+import { Lungo, Request, Response, IHandler, Router, fileUploader, INextFunc } from 'lungojs'
 
 import { Server, IncomingHttpHeaders } from 'http'
 
@@ -48,19 +48,19 @@ export class LungoAdapter extends HttpAdapter<Lungo, Request, Response, IHandler
   }
 
   public registerErrorHandler(): void {
-    this.app.on('error', (req: Request, res: Response, err: Error) => {
+    this.app.onError((req: Request, res: Response, err: unknown) => {
       this.handleError(err, req, res)
     })
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected getSingleFileUploadMiddleware(options: any, propertyName: string): Middleware {
-    return uploadFile()
+    return fileUploader()
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected getMultiFileUploadMiddleware(options: any, propertyName: string): Middleware {
-    return uploadFile()
+    return fileUploader()
   }
 
   protected createRouter(): Router {

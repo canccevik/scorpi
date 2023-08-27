@@ -154,10 +154,10 @@ export abstract class HttpAdapter<
     params.forEach((param) => {
       if (!param.propertyName) return
 
-      if (param.paramType === 'file') {
+      if (param.paramType === ParamType.FILE) {
         const middleware = this.getSingleFileUploadMiddleware(param.options, param.propertyName)
         actionMiddlewares.push(middleware)
-      } else if (param.paramType === 'files') {
+      } else if (param.paramType === ParamType.FILES) {
         const middleware = this.getMultiFileUploadMiddleware(param.options, param.propertyName)
         actionMiddlewares.push(middleware)
       }
@@ -229,48 +229,24 @@ export abstract class HttpAdapter<
   }
 
   protected getParamFromRequest(req: Request, res: Response, filter: ParamFilter): any {
-    let param = null
-
-    switch (filter.paramType) {
-      case 'req':
-        param = req
-        break
-      case 'res':
-        param = res
-        break
-      case 'body':
-        param = this.getBodyFromRequest(req)
-        break
-      case 'cookies':
-        param = this.getCookiesFromRequest(req)
-        break
-      case 'headers':
-        param = this.getHeadersFromRequest(req)
-        break
-      case 'hosts':
-        param = this.getHostNameFromRequest(req)
-        break
-      case 'ip':
-        param = this.getIpFromRequest(req)
-        break
-      case 'params':
-        param = this.getParamsFromRequest(req)
-        break
-      case 'query':
-        param = this.getQueryFromRequest(req)
-        break
-      case 'session':
-        param = this.getSessionFromRequest(req)
-        break
-      case 'file':
-        param = this.getFileFromRequest(req)
-        break
-      case 'files':
-        param = this.getFilesFromRequest(req)
-        break
+    const params: Record<ParamType, unknown> = {
+      [ParamType.REQUEST]: req,
+      [ParamType.RESPONSE]: res,
+      [ParamType.BODY]: this.getBodyFromRequest(req),
+      [ParamType.COOKIES]: this.getCookiesFromRequest(req),
+      [ParamType.HEADERS]: this.getHeadersFromRequest(req),
+      [ParamType.HOSTS]: this.getHostNameFromRequest(req),
+      [ParamType.IP]: this.getIpFromRequest(req),
+      [ParamType.PARAMS]: this.getParamsFromRequest(req),
+      [ParamType.QUERY]: this.getQueryFromRequest(req),
+      [ParamType.SESSION]: this.getSessionFromRequest(req),
+      [ParamType.FILE]: this.getFileFromRequest(req),
+      [ParamType.FILES]: this.getFilesFromRequest(req)
     }
 
-    return filter.propertyName && !['file', 'files'].includes(filter.paramType)
+    const param: any = params[filter.paramType]
+
+    return filter.propertyName && ![ParamType.FILE, ParamType.FILES].includes(filter.paramType)
       ? param[filter.propertyName]
       : param
   }

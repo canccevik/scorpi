@@ -18,11 +18,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "tsc",
-    "build:dev": "tsc --watch",
-    "test": "jest --verbose --maxWorkers=1 --detectOpenHandles --forceExit",
-    "lint": "eslint --ext .js,.ts .",
-    "lint:fix": "eslint --fix --ext .js,.ts .",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+    "build:dev": "tsc --watch"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",

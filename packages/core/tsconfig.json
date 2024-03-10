@@ -1,9 +1,10 @@
 {
-  "include": ["src"],
+  "include": ["./"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "target": "ES5",
     "experimentalDecorators": true,
+    "composite": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
     "rootDir": "./",

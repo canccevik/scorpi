@@ -1,6 +1,6 @@
 {
   "name": "@scorpijs/core",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "💎 A modern web framework that is built on top of Express and Lungo. It provides a decorator-based approach for building scalable and well-structured APIs.",
   "author": "Can Çevik <mazlumcancevik@gmail.com>",
   "license": "MIT",

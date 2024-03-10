@@ -2,9 +2,9 @@ import { SuperAgentTest, agent } from 'supertest'
 
 import { Server } from 'http'
 
-import { ExpressAdapter, HttpStatus, ScorpiFactory } from '../../src'
-import { ScorpiApplication } from '../../src/scorpi-application'
-import { MethodDecoratorsController } from '../controllers'
+import { ExpressAdapter } from '../adapters/express.adapter'
+import { MethodDecoratorsController } from '../../../test/controllers'
+import { HttpStatus, ScorpiFactory, ScorpiApplication } from '../../core'
 
 describe('[Express] HTTP Method Decorators', () => {
   let app: ScorpiApplication

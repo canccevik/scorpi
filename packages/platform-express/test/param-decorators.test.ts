@@ -2,9 +2,9 @@ import { SuperAgentTest, agent } from 'supertest'
 
 import { Server } from 'http'
 
-import { ExpressAdapter, ScorpiFactory } from '../../src'
-import { ScorpiApplication } from '../../src/scorpi-application'
-import { ParamDecoratorsController } from '../controllers'
+import { ExpressAdapter } from '../adapters'
+import { ScorpiFactory, ScorpiApplication } from '../../core'
+import { ParamDecoratorsController } from '../../../test/controllers'
 
 describe('[Express] Param Decorators', () => {
   let app: ScorpiApplication

@@ -2,9 +2,9 @@ import { SuperAgentTest, agent } from 'supertest'
 
 import { Server } from 'http'
 
-import { HttpStatus, LungoAdapter, ScorpiFactory } from '../../src'
-import { ScorpiApplication } from '../../src/scorpi-application'
-import { MethodDecoratorsController } from '../controllers'
+import { LungoAdapter } from '../adapters'
+import { HttpStatus, ScorpiApplication, ScorpiFactory } from '../../core'
+import { MethodDecoratorsController } from '../../../test/controllers'
 
 describe('[Lungo] HTTP Method Decorators', () => {
   let app: ScorpiApplication

@@ -1,5 +1,3 @@
-import { Request, Response } from 'express'
-
 import {
   Controller,
   Get,
@@ -11,31 +9,31 @@ import {
   Post,
   Query,
   Req,
-  Request as ScorpiRequest,
+  Request,
   Res,
-  Response as ScorpiResponse,
+  Response,
   Cookies
-} from '../../src'
+} from '../../packages/core'
 
 @Controller('/param-decorators')
 export class ParamDecoratorsController {
   @Get('/req')
-  public req(@Req() req: Request): string {
+  public req(@Req() req: any): string {
     return req.baseUrl
   }
 
   @Get('/request')
-  public request(@ScorpiRequest() req: Request): string {
+  public request(@Request() req: any): string {
     return req.baseUrl
   }
 
   @Get('/res')
-  public res(@Res() res: Response): void {
+  public res(@Res() res: any): void {
     res.send('OK')
   }
 
   @Get('/response')
-  public response(@ScorpiResponse() res: Response): void {
+  public response(@Response() res: any): void {
     res.send('OK')
   }
 

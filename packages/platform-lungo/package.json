@@ -1,0 +1,50 @@
+{
+  "name": "@scorpijs/platform-lungo",
+  "version": "1.0.4",
+  "description": "💎 A modern web framework that is built on top of Express and Lungo. It provides a decorator-based approach for building scalable and well-structured APIs.",
+  "author": "Can Çevik <mazlumcancevik@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "express",
+    "lungo",
+    "framework",
+    "decorators"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "tsc",
+    "build:dev": "tsc --watch",
+    "test": "jest --verbose --maxWorkers=1 --detectOpenHandles --forceExit",
+    "lint": "eslint --ext .js,.ts .",
+    "lint:fix": "eslint --fix --ext .js,.ts .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "@types/cors": "^2.8.13",
+    "@types/node": "^20.5.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@scorpijs/core": "^1.0.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "lungojs": "^1.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canccevik/scorpi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/canccevik/scorpi/issues"
+  },
+  "homepage": "https://github.com/canccevik/scorpi#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

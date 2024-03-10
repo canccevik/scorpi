@@ -1,6 +1,6 @@
 {
   "name": "@scorpijs/core",
-  "version": "1.0.4",
+  "version": "2.3.0",
   "description": "💎 A modern web framework that is built on top of Express and Lungo. It provides a decorator-based approach for building scalable and well-structured APIs.",
   "author": "Can Çevik <mazlumcancevik@gmail.com>",
   "license": "MIT",
@@ -30,11 +30,11 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "magnodi": "^1.1.4",
-    "reflect-metadata": "^0.1.13",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "fast-glob": "^3.3.1"
+    "fast-glob": "^3.3.1",
+    "magnodi": "^1.1.4",
+    "reflect-metadata": "^0.1.13"
   },
   "repository": {
     "type": "git",

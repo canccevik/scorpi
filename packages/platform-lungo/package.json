@@ -1,6 +1,6 @@
 {
   "name": "@scorpijs/platform-lungo",
-  "version": "1.0.4",
+  "version": "2.3.0",
   "description": "💎 A modern web framework that is built on top of Express and Lungo. It provides a decorator-based approach for building scalable and well-structured APIs.",
   "author": "Can Çevik <mazlumcancevik@gmail.com>",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@scorpijs/core": "^1.0.4",
+    "@scorpijs/core": "^2.3.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "lungojs": "^1.2.0"

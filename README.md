@@ -46,38 +46,28 @@
 
 # Installation
 
-1. Install scorpi:
+1. Install the core package of scorpi:
 
-   Using npm:
+   ```js
+   npm install @scorpijs/core
+   ```
 
-    ```js
-    npm install scorpi
-    ```
-
-    Using yarn:
-
-    ```js
-    yarn add scorpi
-    ```
-
-    Using pnpm:
-
-    ```js
-    pnpm add scorpi
-    ```
-
-2. Install web framework:
+2. Install the platform package:
 
    If you want to use Scorpi with Express:
 
    ```ts
-   npm install express
+   npm install @scorpijs/platform-express
+   ```
+
+   ```ts
+   npm install --save-dev @types/express
    ```
 
    Or if you want to use Scorpi with Lungo:
 
    ```ts
-   npm install lungojs
+   npm install @scorpijs/platform-lungo
    ```
 
 3. Install class validation and class transformation packages:
@@ -100,7 +90,7 @@
 1. Create a file `user.controller.ts`
 
 ```ts
-import { Body, Controller, Delete, Get, Params, Post, Put } from 'scorpi'
+import { Body, Controller, Delete, Get, Params, Post, Put } from '@scorpijs/core'
 
 @Controller('/users')
 export class UserController {
@@ -134,7 +124,8 @@ export class UserController {
 2. Create a file `index.ts`
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 import { UserController } from './user.controller'
 
 async function bootstrap(): Promise<void> {
@@ -158,7 +149,7 @@ bootstrap()
 You can return promises in your controller. Scorpi will wait until promise resolved and return promise result in the response body.
 
 ```ts
-import { Body, Controller, Get, Params, Post } from 'scorpi'
+import { Body, Controller, Get, Params, Post } from '@scorpijs/core'
 
 @Controller('/users')
 export class UserController {
@@ -185,7 +176,7 @@ You can use framework's request and response objects directly.
 
 ```ts
 import { Request, Response } from 'express'
-import { Controller, Get, Req, Res } from 'scorpi'
+import { Controller, Get, Req, Res } from '@scorpijs/core'
 
 @Controller('/users')
 export class UserController {
@@ -203,7 +194,8 @@ export class UserController {
 By specifying the suffix of your controller files, you can load all controllers from anywhere in your project.
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 
 async function bootstrap(): Promise<void> {
   const app = await ScorpiFactory.create(ExpressAdapter, {
@@ -220,7 +212,8 @@ bootstrap()
 By specifying the suffix of your global middleware files, you can load all global middlewares from anywhere in your project.
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 
 async function bootstrap(): Promise<void> {
   const app = await ScorpiFactory.create(ExpressAdapter, {
@@ -237,7 +230,8 @@ bootstrap()
 You can use the `globalPrefix` option to specify a prefix for all controller routes in your application.
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 
 async function bootstrap(): Promise<void> {
   const app = await ScorpiFactory.create(ExpressAdapter, {
@@ -374,7 +368,7 @@ If you specify a class type as a parameter and decorate it with the parameter de
 You can use the `@StatusCode()` decorator to set the HTTP status code for any action.
 
 ```ts
-import { HttpStatus } from 'scorpi'
+import { HttpStatus } from '@scorpijs/core'
 
 @Get('/')
 @StatusCode(HttpStatus.I_AM_A_TEAPOT)
@@ -522,7 +516,8 @@ There are set of prepared exceptions you can use:
 As CORS is a feature utilized in nearly all web API applications, you can enable it within the Scorpi options.
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 
 async function bootstrap(): Promise<void> {
   const app = await ScorpiFactory.create(ExpressAdapter, {
@@ -537,7 +532,8 @@ bootstrap()
 To use CORS, you must first install the corresponding package. You can install the [cors](https://www.npmjs.com/package/cors) package for both Express and Lungo frameworks. Furthermore, you can also pass CORS options:
 
 ```ts
-import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+import { ScorpiFactory } from '@scorpijs/core'
+import { ExpressAdapter } from '@scorpijs/platform-express'
 
 async function bootstrap(): Promise<void> {
   const app = await ScorpiFactory.create(ExpressAdapter, {
@@ -565,7 +561,7 @@ There are several ways to implement middleware. For instance, let's attempt to u
 
    ```ts
    import helmet from 'helmet'
-   import { Controller, Get, Use } from 'scorpi'
+   import { Controller, Get, Use } from '@scorpijs/core'
 
    @Controller('/users')
    export class UserController {
@@ -583,7 +579,7 @@ There are several ways to implement middleware. For instance, let's attempt to u
 
    ```ts
    import helmet from 'helmet'
-   import { Controller, Use } from 'scorpi'
+   import { Controller, Use } from '@scorpijs/core'
 
    @Controller('/users')
    @Use(helmet())
@@ -598,7 +594,8 @@ There are several ways to implement middleware. For instance, let's attempt to u
 
    ```ts
    import helmet from 'helmet'
-   import { ExpressAdapter, ScorpiFactory } from 'scorpi'
+   import { ScorpiFactory } from '@scorpijs/core'
+   import { ExpressAdapter } from '@scorpijs/platform-express'
    import { UserController } from './user.controller'
 
    async function bootstrap(): Promise<void> {
@@ -619,7 +616,7 @@ There are several ways to implement middleware. For instance, let's attempt to u
 Here's an example of how to create middleware:
 
 ```ts
-import { ExpressMiddleware } from 'scorpi'
+import { ExpressMiddleware } from '@scorpijs/platform-express'
 
 class CustomMiddleware implements ExpressMiddleware {
   public use(req: Request, res: Response, next: NextFunction): void {
@@ -659,7 +656,7 @@ export class UserController {
 Global middlewares always run before each request. To make your middleware global, you must register it during the bootstrap process.
 
 ```ts
-import { ExpressMiddleware } from 'scorpi'
+import { ExpressMiddleware } from '@scorpijs/platform-express'
 
 class CustomMiddleware implements ExpressMiddleware {
   public use(req: Request, res: Response, next: NextFunction): void {
@@ -687,6 +684,8 @@ bootstrap()
 By default, Scorpi uses the default exception handler of its underlying framework. However, it is also easy to create your own custom exception handler middleware like that:
 
 ```ts
+import { ExpressExceptionHandler } from '@scorpijs/platform-express'
+
 class CustomExceptionHandler implements ExpressExceptionHandler {
   public catch(exception: HttpException, req: Request, res: Response): void {
     if (exception instanceof Error) {
@@ -795,7 +794,7 @@ Scorpi uses [MagnoDI](https://github.com/canccevik/magnodi) as its built-in DI c
 Let's take a look at how to use it by creating a service:
 
 ```ts
-import { Injectable } from 'scorpi'
+import { Injectable } from '@scorpijs/core'
 
 @Injectable()
 export class LoggerService {
